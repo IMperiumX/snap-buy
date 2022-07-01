@@ -277,3 +277,15 @@ snap_buy/media/
 .env
 .envs/*
 !.envs/.local/
+
+## sqlite DB
+*.sqlite3
+
+## migration files
+*.pyc
+*.pyo
+*.bak
+*_initial.py
+
+# Vscode settings
+.vscode/*
