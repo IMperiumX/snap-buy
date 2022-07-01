@@ -8,8 +8,6 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
-
-
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'price', 'available', 'created', 'updated']
@@ -27,7 +25,6 @@ class ProductAdmin(admin.ModelAdmin):
             'fields': ('created', 'updated')
         }),
     )
-    filter_horizontal = ('category',)
     raw_id_fields = ('category',)
     autocomplete_fields = ('category',)
     
