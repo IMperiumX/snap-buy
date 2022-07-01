@@ -5,7 +5,7 @@ from django.db import models
 # Catogery model with name - slug and Meta class for ordering
 class Category(models.Model):
     name = models.CharField(max_length=255, db_index=True)
-    slug = models.SlugField(unique=True, unique=True)
+    slug = models.SlugField(unique=True)
 
     class Meta:
         ordering = ('name',)
