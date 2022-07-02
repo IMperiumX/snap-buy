@@ -1,6 +1,4 @@
-{% extends 'shop/base.html' %} {%load static%} {% block title %} {% if category
-%}{{ category.name }}{% else %}Products{% endif %} {% endblock %} {% block
-content %}
+{% extends 'shop/base.html' %} {%load static%} {% block title %} {% if category %}{{ category.name }}{% else %}Products{% endif %} {% endblock %} {% block content %}
 <div id="sidebar">
     <h3>Categories</h3>
     <ul>
@@ -8,7 +6,7 @@ content %}
             <a href="{% url 'shop:product_list' %}">All</a>
         </li>
         {% for c in categories %}
-        <li {% if category.slug=="c.slug" %}class="selected" {% endif %}>
+        <li {% if category.slug == "c.slug" %}class="selected" {% endif %}>
             <a href="{{ c.get_absolute_url }}">{{ c.name }}</a>
         </li>
         {% endfor %}
