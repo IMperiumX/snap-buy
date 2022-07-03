@@ -271,7 +271,7 @@ tags
 
 ### Project template
 snap_buy/media/
-
+myshop/media/
 .pytest_cache/
 .ipython/
 .env
