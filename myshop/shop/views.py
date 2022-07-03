@@ -1,7 +1,9 @@
 from cart.forms import CartAddProductForm
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404
+from django.shortcuts import render
 
-from .models import Category, Product
+from .models import Category
+from .models import Product
 
 
 def product_list(request, category_slug=None):
