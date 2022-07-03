@@ -2,19 +2,33 @@
 
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-        <title>{% block title %} Snap Buy {% endblock %}</title>
-        <link rel="stylesheet" href="{% static 'css/base.css' %}" />
-    </head>
-    <body>
-        <div id="header">
-            <a href="/" class="logo">My shop</a>
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>{% block title %} Snap Buy {% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}" />
+</head>
+
+<body>
+    <div id="header">
+        <a href="/" class="logo">My shop</a>
+    </div>
+    <div id="subheader">
+        <div class="cart"> {% with total_items=cart|length %}
+            {% if total_items > 0 %}
+            Your cart:
+            <a href="{% url 'cart:cart_detail' %}">
+                {{ total_items }} item{{ total_items|pluralize }},
+                ${{ cart.get_total_price }}
+            </a>
+            {% else %}
+            Your cart is empty.
+            {% endif %}
+            {% endwith %}
         </div>
-        <div id="subheader">
-            <div class="cart">Your cart is empty.</div>
-        </div>
-        <div id="content">{% block content %} {% endblock %}</div>
-    </body>
+    </div>
+    <div id="content">{% block content %} {% endblock %}</div>
+</body>
+
 </html>
