@@ -5,6 +5,7 @@ from shop.models import Product
 
 
 class Cart:
+
     def save(self):
         # mark the session as "modified" to make sure it gets saved
         self.session.modified = True
@@ -26,7 +27,10 @@ class Cart:
         """
         product_id = str(product.id)
         if product_id not in self.cart:
-            self.cart[product_id] = {"quantity": 0, "price": str(product.price)}
+            self.cart[product_id] = {
+                "quantity": 0,
+                "price": str(product.price)
+            }
         if override_quantity:
             self.cart[product_id]["quantity"] = quantity
         else:
@@ -65,8 +69,8 @@ class Cart:
 
     def get_total_price(self):
         return sum(
-            Decimal(item["price"]) * item["quantity"] for item in self.cart.values()
-        )
+            Decimal(item["price"]) * item["quantity"]
+            for item in self.cart.values())
 
     def clear(self):
         # remove cart from session

@@ -16,7 +16,11 @@ def product_list(request, category_slug=None):
     return render(
         request,
         "shop/product/list.html",
-        {"category": category, "categories": categories, "products": products},
+        {
+            "category": category,
+            "categories": categories,
+            "products": products
+        },
     )
 
 
@@ -26,5 +30,8 @@ def product_detail(request, id, slug):
     return render(
         request,
         "shop/product/detail.html",
-        {"product": product, "cart_product_form": cart_product_form},
+        {
+            "product": product,
+            "cart_product_form": cart_product_form
+        },
     )
