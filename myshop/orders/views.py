@@ -1,7 +1,8 @@
-from django.shortcuts import render
-from .models import OrderItem
-from .forms import OrderCreateForm
 from cart.cart import Cart
+from django.shortcuts import render
+
+from .forms import OrderCreateForm
+from .models import OrderItem
 
 
 def order_create(request):
