@@ -15,6 +15,5 @@ def order_created(order_id):
         f"You have successfully placed an order."
         f"Your order ID is {order.id}."
     )
-    mail_sent = send_mail(
-        subject, message, "yusufadell.dev@gmail.com", [order.email])
+    mail_sent = send_mail(subject, message, "yusufadell.dev@gmail.com", [order.email])
     return mail_sent
