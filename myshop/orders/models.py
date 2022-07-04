@@ -25,7 +25,8 @@ class Order(models.Model):
 
 # Create your models here.
 class OrderItem(models.Model):
-    order = models.ForeignKey(Order, related_name="items", on_delete=models.CASCADE)
+    order = models.ForeignKey(
+        Order, related_name="items", on_delete=models.CASCADE)
     product = models.ForeignKey(
         Product, related_name="order_items", on_delete=models.CASCADE
     )
