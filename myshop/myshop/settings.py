@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+import braintree
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -32,7 +33,6 @@ ALLOWED_HOSTS = []
 BRAINTREE_MERCHANT_ID = "4zxx7xvpmjcck5mz"  # Merchant ID
 BRAINTREE_PUBLIC_KEY = "hr8kgd23nszx4cf8"  # Public Key
 BRAINTREE_PRIVATE_KEY = "f9e04f873219a88e864b05a686104c18"  # Private key
-import braintree
 
 BRAINTREE_CONF = braintree.Configuration(
     braintree.Environment.Sandbox,
