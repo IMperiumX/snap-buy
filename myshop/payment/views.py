@@ -17,13 +17,13 @@ def payment_process(request):
         # retrieve nonce
         nonce = request.POST.get("payment_method_nonce", None)
         # create and submit transaction
-        result = gateway.transaction.sale(
-            {
-                "amount": f"{total_cost:.2f}",
-                "payment_method_nonce": nonce,
-                "options": {"submit_for_settlement": True},
-            }
-        )
+        result = gateway.transaction.sale({
+            "amount": f"{total_cost:.2f}",
+            "payment_method_nonce": nonce,
+            "options": {
+                "submit_for_settlement": True
+            },
+        })
         if result.is_success:
             # mark the order as paid
             order.paid = True
@@ -39,7 +39,10 @@ def payment_process(request):
         return render(
             request,
             "payment/process.html",
-            {"order": order, "client_token": client_token},
+            {
+                "order": order,
+                "client_token": client_token
+            },
         )
 
 
