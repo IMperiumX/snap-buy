@@ -1,5 +1,6 @@
 from cart.cart import Cart
-from django.shortcuts import redirect, render
+from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse
 
 from .forms import OrderCreateForm
