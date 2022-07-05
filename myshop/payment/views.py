@@ -1,6 +1,6 @@
 import braintree
-from django.shortcuts import render, redirect, get_object_or_404
 from django.conf import settings
+from django.shortcuts import get_object_or_404, redirect, render
 from orders.models import Order
 
 # instantiate Braintree payment gateway
