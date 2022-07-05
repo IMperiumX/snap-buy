@@ -28,6 +28,19 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+# Braintree settings
+BRAINTREE_MERCHANT_ID = "4zxx7xvpmjcck5mz"  # Merchant ID
+BRAINTREE_PUBLIC_KEY = "hr8kgd23nszx4cf8"  # Public Key
+BRAINTREE_PRIVATE_KEY = "f9e04f873219a88e864b05a686104c18"  # Private key
+import braintree
+
+BRAINTREE_CONF = braintree.Configuration(
+    braintree.Environment.Sandbox,
+    BRAINTREE_MERCHANT_ID,
+    BRAINTREE_PUBLIC_KEY,
+    BRAINTREE_PRIVATE_KEY,
+)
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +52,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 3rd-party
     "django_extensions",
+    "payment.apps.PaymentConfig",
     # My apps
     "shop.apps.ShopConfig",
     "cart.apps.CartConfig",
