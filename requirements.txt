@@ -4,4 +4,5 @@ celery==5.2.2
 flower==0.9.3
 braintree>=3.59.0
 weasyprint>=51
+redis==3.4.1
 django-extensions
