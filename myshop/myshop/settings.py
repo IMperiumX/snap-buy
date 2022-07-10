@@ -144,3 +144,9 @@ STATIC_URL = "/static/"
 MEDIA_URL = "/media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
 STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+
+
+# recommendation engine settings
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB = 1
