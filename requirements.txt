@@ -1,7 +1,7 @@
 Django>=3.1.14
 Pillow==9.3.0
 celery==5.2.2
-flower==0.9.3
+flower==1.2.0
 braintree>=3.59.0
 weasyprint>=51
 redis==3.4.1
