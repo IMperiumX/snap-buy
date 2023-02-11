@@ -25,9 +25,6 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/yusufadell/snap-buy">
-    <img src="images/logo.png" alt="Logo" width="80" height="80">
-  </a>
 
 <h3 align="center">snap-buy</h3>
 
@@ -206,4 +203,3 @@ Project Link: [https://github.com/yusufadell/snap-buy](https://github.com/yusufa
 [license-url]: https://github.com/yusufadell/snap-buy/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/yusufadell
-[product-screenshot]: images/screenshot.png

@@ -45,6 +45,6 @@ def cart_detail(request):
         {
             "cart": cart,
             "coupon_apply_form": coupon_apply_form,
-            "recommended_products": recommended_product,
+            "recommended_products": recommended_products,
         },
     )
