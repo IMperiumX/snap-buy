@@ -1,205 +1,97 @@
-<div id="top"></div>
-<!--
-*** Thanks for checking out the Best-README-Template. If you have a suggestion
-*** that would make this better, please fork the repo and create a pull request
-*** or simply open an issue with the tag "enhancement".
-*** Don't forget to give the project a star!
-*** Thanks again! Now go create something AMAZING! :D
--->
+# snap-buy
 
-<!-- PROJECT SHIELDS -->
-<!--
-*** I'm using markdown "reference style" links for readability.
-*** Reference links are enclosed in brackets [ ] instead of parentheses ( ).
-*** See the bottom of this document for the declaration of the reference variables
-*** for contributors-url, forks-url, etc. This is an optional, concise syntax you may use.
-*** https://www.markdownguide.org/basic-syntax/#reference-style-links
--->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
+Online Shop with essential functionalities of an e-commerce platform, Checkout process (cart, discount, payment with credit card) , High Performing Reccomendations using redis, i18n offers site in multiple languages
 
-<!-- PROJECT LOGO -->
-<br />
-<div align="center">
+[![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
+[![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
-<h3 align="center">snap-buy</h3>
+License: MIT
 
-  <p align="center">
-    Online Shop with essential functionalities of an e-commerce platform, Checkout process (cart, discount, payment with credit card) , High Performing Reccomendations using redis, i18n offers site in multiple languages
-    <br />
-    <a href="https://github.com/yusufadell/snap-buy"><strong>Explore the docs »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/yusufadell/snap-buy">View Demo</a>
-    ·
-    <a href="https://github.com/yusufadell/snap-buy/issues">Report Bug</a>
-    ·
-    <a href="https://github.com/yusufadell/snap-buy/issues">Request Feature</a>
-  </p>
-</div>
+## Settings
 
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
+Moved to [settings](http://cookiecutter-django.readthedocs.io/en/latest/settings.html).
 
-<!-- ABOUT THE PROJECT -->
-## About The Project
+## Basic Commands
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+### Setting Up Your Users
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+- To create a **normal user account**, just go to Sign Up and fill out the form. Once you submit it, you'll see a "Verify Your E-mail Address" page. Go to your console to see a simulated email verification message. Copy the link into your browser. Now the user's email should be verified and ready to go.
 
-### Built With
+- To create a **superuser account**, use this command:
 
-* [Next.js](https://nextjs.org/)
-* [React.js](https://reactjs.org/)
-* [Vue.js](https://vuejs.org/)
-* [Angular](https://angular.io/)
-* [Svelte](https://svelte.dev/)
-* [Laravel](https://laravel.com)
-* [Bootstrap](https://getbootstrap.com)
-* [JQuery](https://jquery.com)
+      $ python manage.py createsuperuser
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+For convenience, you can keep your normal user logged in on Chrome and your superuser logged in on Firefox (or similar), so that you can see how the site behaves for both kinds of users.
 
-<!-- GETTING STARTED -->
-## Getting Started
+### Type checks
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+Running type checks with mypy:
 
-### Prerequisites
+    $ mypy snap_buy
 
-This is an example of how to list things you need to use the software and how to install them.
+### Test coverage
 
-* npm
+To run the tests, check your test coverage, and generate an HTML coverage report:
 
-  ```sh
-  npm install npm@latest -g
-  ```
+    $ coverage run -m pytest
+    $ coverage html
+    $ open htmlcov/index.html
 
-### Installation
+#### Running tests with pytest
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+    $ pytest
 
-   ```sh
-   git clone https://github.com/yusufadell/snap-buy.git
-   ```
+### Live reloading and Sass CSS compilation
 
-3. Install NPM packages
+Moved to [Live reloading and SASS compilation](https://cookiecutter-django.readthedocs.io/en/latest/developing-locally.html#sass-compilation-live-reloading).
 
-   ```sh
-   npm install
-   ```
+### Celery
 
-4. Enter your API in `config.js`
+This app comes with Celery.
 
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
+To run a celery worker:
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+```bash
+cd snap_buy
+celery -A config.celery_app worker -l info
+```
 
-<!-- USAGE EXAMPLES -->
-## Usage
+Please note: For Celery's import magic to work, it is important _where_ the celery commands are run. If you are in the same folder with _manage.py_, you should be right.
 
-Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
+To run [periodic tasks](https://docs.celeryq.dev/en/stable/userguide/periodic-tasks.html), you'll need to start the celery beat scheduler service. You can start it as a standalone process:
 
-_For more examples, please refer to the [Documentation](https://example.com)_
+```bash
+cd snap_buy
+celery -A config.celery_app beat
+```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+or you can embed the beat service inside a worker with the `-B` option (not recommended for production use):
 
-<!-- ROADMAP -->
-## Roadmap
+```bash
+cd snap_buy
+celery -A config.celery_app worker -B -l info
+```
 
-* [ ] Feature 1
-* [ ] Feature 2
-* [ ] Feature 3
-  * [ ] Nested Feature
+### Email Server
 
-See the [open issues](https://github.com/yusufadell/snap-buy/issues) for a full list of proposed features (and known issues).
+In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server [MailHog](https://github.com/mailhog/MailHog) with a web interface is available as docker container.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+Container mailhog will start automatically when you will run all docker containers.
+Please check [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html) for more details how to start all containers.
 
-<!-- CONTRIBUTING -->
-## Contributing
+With MailHog running, to view messages that are sent by your application, open your browser and go to `http://127.0.0.1:8025`
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+### Sentry
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with the tag "enhancement".
-Don't forget to give the project a star! Thanks again!
+Sentry is an error logging aggregator service. You can sign up for a free account at <https://sentry.io/signup/?code=cookiecutter> or download and host it yourself.
+The system is set up with reasonable defaults, including 404 logging and integration with the WSGI application.
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+You must set the DSN url in production.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+## Deployment
 
-<!-- LICENSE -->
-## License
+The following details how to deploy this application.
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+### Docker
 
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- CONTACT -->
-## Contact
-
-Your Name - [@WHYUSUF_](https://twitter.com/WHYUSUF_) - yusufadell.dev@gmail.com
-
-Project Link: [https://github.com/yusufadell/snap-buy](https://github.com/yusufadell/snap-buy)
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
-
-* []()
-* []()
-* []()
-
-<p align="right">(<a href="#top">back to top</a>)</p>
-
-<!-- MARKDOWN LINKS & IMAGES -->
-<!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[contributors-shield]: https://img.shields.io/github/contributors/yusufadell/snap-buy.svg?style=for-the-badge
-[contributors-url]: https://github.com/yusufadell/snap-buy/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/yusufadell/snap-buy.svg?style=for-the-badge
-[forks-url]: https://github.com/yusufadell/snap-buy/network/members
-[stars-shield]: https://img.shields.io/github/stars/yusufadell/snap-buy.svg?style=for-the-badge
-[stars-url]: https://github.com/yusufadell/snap-buy/stargazers
-[issues-shield]: https://img.shields.io/github/issues/yusufadell/snap-buy.svg?style=for-the-badge
-[issues-url]: https://github.com/yusufadell/snap-buy/issues
-[license-shield]: https://img.shields.io/github/license/yusufadell/snap-buy.svg?style=for-the-badge
-[license-url]: https://github.com/yusufadell/snap-buy/blob/master/LICENSE.txt
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/yusufadell
+See detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).

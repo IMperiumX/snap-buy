@@ -1,8 +1,0 @@
-Django
-Pillow
-celery
-flower
-braintree
-weasyprint
-redis
-django-extensions
