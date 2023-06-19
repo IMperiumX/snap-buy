@@ -46,17 +46,18 @@
 <br/>
 
 <!-- Table of Contents -->
+
 # :notebook_with_decorative_cover: Table of Contents
 
-- [:notebook\_with\_decorative\_cover: Table of Contents](#notebook_with_decorative_cover-table-of-contents)
-  - [:star2: About project\_title](#star2-about-project_title)
+- [:notebook_with_decorative_cover: Table of Contents](#notebook_with_decorative_cover-table-of-contents)
+  - [:star2: About project_title](#star2-about-project_title)
     - [:camera: Screenshots](#camera-screenshots)
-    - [:space\_invader: Tech Stack](#space_invader-tech-stack)
+    - [:space_invader: Tech Stack](#space_invader-tech-stack)
   - [:toolbox: Getting Started](#toolbox-getting-started)
     - [:bangbang: Prerequisites](#bangbang-prerequisites)
     - [:gear: Installation](#gear-installation)
     - [Type checks](#type-checks)
-    - [:test\_tube: Running Tests](#test_tube-running-tests)
+    - [:test_tube: Running Tests](#test_tube-running-tests)
     - [Test coverage](#test-coverage)
       - [Running tests with pytest](#running-tests-with-pytest)
     - [:running: Run Locally](#running-run-locally)
@@ -64,7 +65,7 @@
   - [:compass: Roadmap](#compass-roadmap)
   - [:wave: Contributing](#wave-contributing)
     - [:scroll: Code of Conduct](#scroll-code-of-conduct)
-  - [:grey\_question: FAQ](#grey_question-faq)
+  - [:grey_question: FAQ](#grey_question-faq)
   - [:warning: License](#warning-license)
   - [:handshake: Contact](#handshake-contact)
   - [:gem: Acknowledgements](#gem-acknowledgements)
@@ -72,6 +73,7 @@
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- About the Project -->
+
 ## :star2: About project_title
 
 project_description
@@ -79,6 +81,7 @@ project_description
 Here's a blank template to get started: To avoid retyping too much info. Do a search and replace with your text editor for the following: `github_username`, `repo_name`, `twitter_handle`, `linkedin_username`, `email_client`, `email`, `project_title`, `project_description`
 
 <!-- Screenshots -->
+
 ### :camera: Screenshots
 
 <div align="center">
@@ -86,6 +89,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 </div>
 
 <!-- TechStack -->
+
 ### :space_invader: Tech Stack
 
 <details open>
@@ -135,9 +139,11 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Getting Started -->
+
 ## :toolbox: Getting Started
 
 <!-- Prerequisites -->
+
 ### :bangbang: Prerequisites
 
 - npm
@@ -170,6 +176,7 @@ Here's a blank template to get started: To avoid retyping too much info. Do a se
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Running Tests -->
+
 ### Type checks
 
 Running type checks with mypy:
@@ -199,6 +206,7 @@ To run the tests, check your test coverage, and generate an HTML coverage report
 ```
 
 <!-- Run Locally -->
+
 ### :running: Run Locally
 
 Clone the project
@@ -229,6 +237,7 @@ Start the server
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Usage -->
+
 ## :eyes: Usage
 
 Use this space to tell a little more about your project and how it can be used. Show additional screenshots, code samples, demos or link to other resources.
@@ -243,6 +252,7 @@ def main():
 ```
 
 <!-- Roadmap -->
+
 ## :compass: Roadmap
 
 - [x] Todo 1
@@ -253,6 +263,7 @@ See the [open issues](https://github.com/othneildrew/Best-README-Template/issues
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Contributing -->
+
 ## :wave: Contributing
 
 <a href="https://github.com/github_username/repo_name/graphs/contributors">
@@ -275,11 +286,13 @@ Don't forget to give the project a star! Thanks again!
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- Code of Conduct -->
+
 ### :scroll: Code of Conduct
 
 Please read the [Code of Conduct](https://github.com/github_username/repo_name/blob/master/CODE_OF_CONDUCT.md)
 
 <!-- FAQ -->
+
 ## :grey_question: FAQ
 
 - Question 1
@@ -293,11 +306,13 @@ Please read the [Code of Conduct](https://github.com/github_username/repo_name/b
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- License -->
+
 ## :warning: License
 
 Distributed under the no License. See LICENSE.txt for more information.
 
 <!-- Contact -->
+
 ## :handshake: Contact
 
 Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_client.com
@@ -305,6 +320,7 @@ Your Name - [@twitter_handle](https://twitter.com/twitter_handle) - email@email_
 Project Link: [https://github.com/github_username/repo_name](https://github.com/github_username/repo_name)
 
 <!-- Acknowledgments -->
+
 ## :gem: Acknowledgements
 
 Use this section to mention useful resources and libraries that you have used in your projects.
