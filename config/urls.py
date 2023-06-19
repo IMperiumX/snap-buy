@@ -4,7 +4,6 @@ from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path
 from django.views import defaults as default_views
-from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
 
@@ -14,11 +13,8 @@ urlpatterns = [
     # User management
     path("users/", include("snap_buy.users.urls", namespace="users")),
     # Your stuff: custom urls includes go here
-    path("orders/", include("snap_buy.orders.urls", namespace="orders")),
-    path("orders/", include("snap_buy.products.urls", namespace="products")),
-    path("orders/", include("snap_buy.coupons.urls", namespace="coupons")),
-    path("orders/", include("snap_buy.cart.urls", namespace="cart")),
-    path("orders/", include("snap_buy.payment.urls", namespace="payment")),
+    path("chaining/", include("smart_selects.urls")),
+    path("products/", include("snap_buy.products.urls", namespace="products")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 if settings.DEBUG:
     # Static file serving when using Gunicorn + Uvicorn for local web socket development
