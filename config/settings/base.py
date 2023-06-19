@@ -84,11 +84,11 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "snap_buy.users",
     # Your stuff: custom apps go here
-    "snap_buy.orders",
+    "snap_buy.tax",
+    "snap_buy.channel",
+    "snap_buy.core",
+    "snap_buy.seo",
     "snap_buy.products",
-    "snap_buy.payment",
-    "snap_buy.coupons",
-    "snap_buy.cart",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
