@@ -11,11 +11,7 @@ from django.urls import reverse
 from snap_buy.users.forms import UserAdminChangeForm
 from snap_buy.users.models import User
 from snap_buy.users.tests.factories import UserFactory
-from snap_buy.users.views import (
-    UserRedirectView,
-    UserUpdateView,
-    user_detail_view,
-)
+from snap_buy.users.views import UserRedirectView, UserUpdateView, user_detail_view
 
 pytestmark = pytest.mark.django_db
 
