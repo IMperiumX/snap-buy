@@ -172,7 +172,6 @@ class Product(ProductMixin, SeoModel, ModelWithExternalReference):
 
     class Meta:
         ordering = ("slug",)
-        index_together = (("id", "slug"),)  # plan to query products by both id and slug
 
     def __str__(self):
         return self.name
