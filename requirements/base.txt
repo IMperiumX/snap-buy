@@ -8,9 +8,15 @@ celery==5.2.7  # pyup: < 6.0  # https://github.com/celery/celery
 django-celery-beat==2.5.0  # https://github.com/celery/django-celery-beat
 flower==1.2.0  # https://github.com/mher/flower
 uvicorn[standard]==0.22.0  # https://github.com/encode/uvicorn
-braintree==4.19.0
-weasyprint==59.0
-
+braintree==4.19.0 #
+weasyprint==59.0 # https://github.com/Kozea/WeasyPrint
+django-mptt==0.14.0 # https://github.com/django-mptt/django-mptt
+django-measurement==3.2.4 # https://github.com/coddingtonbear/django-measurement
+django-prices==2.3.0 # https://github.com/mirumee/django-prices
+django-smart-selects==1.6.0 # https://github.com/jazzband/django-smart-selects/
+django-countries # https://github.com/SmileyChris/django-countries
+django-phonenumber-field==7.1.0 # https://github.com/stefanfoulis/django-phonenumber-field
+phonenumbers==8.13.11 # https://github.com/daviddrysdale/python-phonenumbers
 # Django
 # ------------------------------------------------------------------------------
 django==4.1.9  # pyup: < 4.2  # https://www.djangoproject.com/
