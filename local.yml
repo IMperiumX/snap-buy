@@ -56,7 +56,7 @@ services:
     image: mailhog/mailhog:v1.0.0
     container_name: snap_buy_local_mailhog
     ports:
-      - "8025:8025"
+      - '8025:8025'
 
   redis:
     image: redis:6
