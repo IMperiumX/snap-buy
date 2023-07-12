@@ -6,25 +6,11 @@ from django.utils import timezone
 from prices import Money
 
 from snap_buy.core.models import SortableModel
-from snap_buy.products import ProductTypeKind
 from snap_buy.products import models as products_models
+from snap_buy.products.enums import ProductTypeKind
 
 
 class ProductMixin:
-    def __repr__(self) -> str:
-        class_ = type(self)
-        return "<{}.{}(pk={!r}, name={!r})>".format(
-            class_.__module__,
-            class_.__name__,
-            self.pk,
-            self.name,
-        )
-
-    def __iter__(self):
-        if not hasattr(self, "__variants"):
-            setattr(self, "__variants", self.variants.all())
-        return iter(getattr(self, "__variants"))
-
     def get_first_image(self):
         all_media = self.media.all()
         images = [media for media in all_media if media.type == products_models.ProductMediaTypes.IMAGE]

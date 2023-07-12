@@ -13,14 +13,13 @@ from mptt.managers import TreeManager
 from mptt.models import MPTTModel, TreeForeignKey
 
 from snap_buy import file_upload
-from snap_buy.channel.models import Channel
 from snap_buy.core.models import ModelWithExternalReference, PublishableModel, SortableModel
 from snap_buy.core.units import WeightUnits
 from snap_buy.core.weight import zero_weight
 from snap_buy.seo.models import SeoModel
 from snap_buy.tax.models import TaxClass
 
-from . import ProductMediaTypes, ProductTypeKind
+from .enums import ProductMediaTypes, ProductTypeKind
 from .managers import (
     CategoryManager,
     CollectionManager,
@@ -92,7 +91,6 @@ class ProductType(models.Model):
         unit_choices=WeightUnits.CHOICES,
     )
 
-    # relations
     tax_class = models.ForeignKey(
         TaxClass,
         related_name="product_types",
@@ -104,29 +102,22 @@ class ProductType(models.Model):
     class Meta:
         ordering = ("slug",)
 
-    def __str__(self) -> str:
+    def __str__(self):
         return self.name
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         class_ = type(self)
         return "<{}.{}(pk={!r}, name={!r})>".format(
             class_.__module__,
             class_.__name__,
             self.pk,
             self.name,
-        )
+        )  # give __qualname__ a try
 
 
 class Product(ProductMixin, SeoModel, ModelWithExternalReference):
     available = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
-    default_variant = models.OneToOneField(
-        "ProductVariant",
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name="+",
-    )
     description = models.TextField(blank=True)
     image = models.ImageField(
         upload_to=partial(file_upload, "products"),
@@ -140,22 +131,23 @@ class Product(ProductMixin, SeoModel, ModelWithExternalReference):
     slug = models.SlugField(max_length=255)
     updated = models.DateTimeField(auto_now=True)
 
-    # relations
-    weight = MeasurementField(
-        measurement=Weight,
-        unit_choices=WeightUnits.CHOICES,
-        blank=True,
-        null=True,
-    )
     category = models.ForeignKey(
-        Category,
+        "products.Category",
         related_name="products",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
     )
+    default_variant = models.OneToOneField(
+        "products.ProductVariant",
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+
     product_type = models.ForeignKey(
-        ProductType,
+        "products.ProductType",
         related_name="products",
         on_delete=models.CASCADE,
     )
@@ -167,6 +159,12 @@ class Product(ProductMixin, SeoModel, ModelWithExternalReference):
         null=True,
         on_delete=models.SET_NULL,
     )
+    weight = MeasurementField(
+        measurement=Weight,
+        unit_choices=WeightUnits.CHOICES,
+        blank=True,
+        null=True,
+    )
 
     objects = ProductManager()
 
@@ -176,23 +174,22 @@ class Product(ProductMixin, SeoModel, ModelWithExternalReference):
     def __str__(self):
         return self.name
 
+    def __repr__(self):
+        class_ = type(self)
+        return "<{}.{}(pk={!r}, name={!r})>".format(
+            class_.__module__,
+            class_.__name__,
+            self.pk,
+            self.name,
+        )
+
+    def __iter__(self):
+        if not hasattr(self, "__variants"):
+            setattr(self, "__variants", self.variants.all())
+        return iter(getattr(self, "__variants"))
+
 
 class ProductChannelListing(ProductChannelListingMixin, PublishableModel):
-    product = models.ForeignKey(
-        Product,
-        null=False,
-        blank=False,
-        related_name="channel_listings",
-        on_delete=models.CASCADE,
-    )
-    channel = models.ForeignKey(
-        Channel,
-        null=False,
-        blank=False,
-        related_name="product_listings",
-        on_delete=models.CASCADE,
-    )
-    visible_in_listings = models.BooleanField(default=False)
     available_for_purchase_at = models.DateTimeField(blank=True, null=True)
     currency = models.CharField(max_length=settings.DEFAULT_CURRENCY_CODE_LENGTH)
     discounted_price_amount = models.DecimalField(
@@ -202,6 +199,22 @@ class ProductChannelListing(ProductChannelListingMixin, PublishableModel):
         null=True,
     )
     discounted_price = MoneyField(amount_field="discounted_price_amount", currency_field="currency")
+    visible_in_listings = models.BooleanField(default=False)
+
+    channel = models.ForeignKey(
+        "channel.Channel",
+        null=False,
+        blank=False,
+        related_name="product_listings",
+        on_delete=models.CASCADE,
+    )
+    product = models.ForeignKey(
+        "products.Product",
+        null=False,
+        blank=False,
+        related_name="channel_listings",
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         unique_together = [["product", "channel"]]
@@ -213,11 +226,9 @@ class ProductChannelListing(ProductChannelListingMixin, PublishableModel):
 
 
 class ProductVariant(ProductVariantMixin, SortableModel, ModelWithExternalReference):
-    sku = models.CharField(max_length=255, unique=True, null=True, blank=True)
-    name = models.CharField(max_length=255, blank=True)
-
-    track_inventory = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     is_preorder = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, blank=True)
     preorder_end_date = models.DateTimeField(null=True, blank=True)
     preorder_global_threshold = models.IntegerField(blank=True, null=True)
     quantity_limit_per_customer = models.IntegerField(
@@ -225,21 +236,25 @@ class ProductVariant(ProductVariantMixin, SortableModel, ModelWithExternalRefere
         null=True,
         validators=[MinValueValidator(1)],
     )
-    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    sku = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    track_inventory = models.BooleanField(default=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
+
+    product = models.ForeignKey(
+        "products.Product",
+        related_name="variants",
+        on_delete=models.CASCADE,
+    )
+    media = models.ManyToManyField(
+        "products.ProductMedia",
+        through="VariantMedia",
+    )
     weight = MeasurementField(
         measurement=Weight,
         unit_choices=WeightUnits.CHOICES,
         blank=True,
         null=True,
     )
-
-    product = models.ForeignKey(
-        "Product",
-        related_name="variants",
-        on_delete=models.CASCADE,
-    )
-    media = models.ManyToManyField("ProductMedia", through="VariantMedia")
 
     objects = ProductVariantManager()
 
@@ -251,38 +266,37 @@ class ProductVariant(ProductVariantMixin, SortableModel, ModelWithExternalRefere
 
 
 class ProductVariantChannelListing(models.Model):
-    variant = models.ForeignKey(
-        ProductVariant,
-        null=False,
-        blank=False,
-        related_name="channel_listings",
-        on_delete=models.CASCADE,
-    )
-    channel = models.ForeignKey(
-        Channel,
-        null=False,
-        blank=False,
-        related_name="variant_listings",
-        on_delete=models.CASCADE,
-    )
-    currency = models.CharField(max_length=settings.DEFAULT_CURRENCY_CODE_LENGTH)
-    price_amount = models.DecimalField(
-        max_digits=settings.DEFAULT_MAX_DIGITS,
-        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
-        blank=True,
-        null=True,
-    )
-    price = MoneyField(amount_field="price_amount", currency_field="currency")
-
+    cost_price = MoneyField(amount_field="cost_price_amount", currency_field="currency")
     cost_price_amount = models.DecimalField(
         max_digits=settings.DEFAULT_MAX_DIGITS,
         decimal_places=settings.DEFAULT_DECIMAL_PLACES,
         blank=True,
         null=True,
     )
-    cost_price = MoneyField(amount_field="cost_price_amount", currency_field="currency")
-
+    currency = models.CharField(max_length=settings.DEFAULT_CURRENCY_CODE_LENGTH)
     preorder_quantity_threshold = models.IntegerField(blank=True, null=True)
+    price_amount = models.DecimalField(
+        max_digits=settings.DEFAULT_MAX_DIGITS,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        blank=True,
+        null=True,
+    )
+
+    channel = models.ForeignKey(
+        "channel.Channel",
+        null=False,
+        blank=False,
+        related_name="variant_listings",
+        on_delete=models.CASCADE,
+    )
+    price = MoneyField(amount_field="price_amount", currency_field="currency")
+    variant = models.ForeignKey(
+        "products.ProductVariant",
+        null=False,
+        blank=False,
+        related_name="channel_listings",
+        on_delete=models.CASCADE,
+    )
 
     objects = ProductVariantChannelListingManager()
 
@@ -292,26 +306,23 @@ class ProductVariantChannelListing(models.Model):
 
 
 class ProductMedia(ProductMediaMixin, SortableModel):
-    product = models.ForeignKey(
-        Product,
-        related_name="media",
-        on_delete=models.CASCADE,
-        # DEPRECATED
-        null=True,
-        blank=True,
-    )
-    image = models.ImageField(upload_to="products", blank=True, null=True)
     alt = models.CharField(max_length=128, blank=True)
+    external_url = models.CharField(max_length=256, blank=True, null=True)
+    image = models.ImageField(upload_to="products", blank=True, null=True)
+    oembed_data = models.JSONField(blank=True, default=dict)
     type = models.CharField(
         max_length=32,
         choices=ProductMediaTypes.CHOICES,
         default=ProductMediaTypes.IMAGE,
     )
-    external_url = models.CharField(max_length=256, blank=True, null=True)
-    oembed_data = models.JSONField(blank=True, default=dict)
 
-    # DEPRECATED
-    to_remove = models.BooleanField(default=False)
+    product = models.ForeignKey(
+        "products.Product",
+        related_name="media",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
 
     class Meta:
         ordering = ("sort_order", "pk")
@@ -319,12 +330,12 @@ class ProductMedia(ProductMediaMixin, SortableModel):
 
 class VariantMedia(models.Model):
     variant = models.ForeignKey(
-        "ProductVariant",
+        "products.ProductVariant",
         related_name="variant_media",
         on_delete=models.CASCADE,
     )
     media = models.ForeignKey(
-        ProductMedia,
+        "products.ProductMedia",
         related_name="variant_media",
         on_delete=models.CASCADE,
     )
@@ -339,13 +350,13 @@ class Shipper(models.Model):
 
     class Meta:
         ordering = ("company_name",)
-        verbose_name = "shipper"
-        verbose_name_plural = "shippers"
+        verbose_name = _("shipper")
+        verbose_name_plural = _("shippers")
 
 
 class CollectionProduct(CollectionProductMixin, SortableModel):
     collection = models.ForeignKey(
-        "Collection",
+        "products.Collection",
         related_name="collectionproduct",
         on_delete=models.CASCADE,
     )
@@ -367,22 +378,22 @@ class Tag(models.Model):
 
 
 class Collection(SeoModel):
-    slug = models.SlugField(
-        max_length=255,
-        unique=True,
-        allow_unicode=True,
-    )
     background_image = models.ImageField(
         blank=True,
         null=True,
         upload_to=partial(file_upload, "collection-backgrounds"),
     )
     background_image_alt = models.CharField(max_length=128, blank=True)
-    name = models.CharField(max_length=250)
     description = models.JSONField(blank=True, null=True)
+    name = models.CharField(max_length=250)
+    slug = models.SlugField(
+        max_length=255,
+        unique=True,
+        allow_unicode=True,
+    )
 
     products = models.ManyToManyField(
-        "Product",
+        "products.Product",
         blank=True,
         related_name="collections",
         through_fields=("collection", "product"),
@@ -400,14 +411,14 @@ class Collection(SeoModel):
 
 class CollectionChannelListing(PublishableModel):
     collection = models.ForeignKey(
-        Collection,
+        "products.Collection",
         null=False,
         blank=False,
         related_name="channel_listings",
         on_delete=models.CASCADE,
     )
     channel = models.ForeignKey(
-        Channel,
+        "channel.Channel",
         null=False,
         blank=False,
         related_name="collection_listings",

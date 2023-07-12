@@ -181,9 +181,8 @@ class ProductMediaAdmin(admin.ModelAdmin):
         "type",
         "external_url",
         "oembed_data",
-        "to_remove",
     )
-    list_filter = ("product", "to_remove")
+    list_filter = ("product",)
 
 
 @admin.register(VariantMedia)

@@ -16,8 +16,7 @@ class SortableModel(models.Model):
 
     def get_max_sort_order(self, qs):
         existing_max = qs.aggregate(Max("sort_order"))
-        existing_max = existing_max.get("sort_order__max")
-        return existing_max
+        return existing_max.get("sort_order__max")
 
     def save(self, *args, **kwargs):
         if self.pk is None:
