@@ -33,6 +33,7 @@ from .mixins import (
     ProductMediaMixin,
     ProductMixin,
     ProductVariantMixin,
+    ProductTypeMixin,
 )
 
 
@@ -61,7 +62,7 @@ class Category(MPTTModel, SeoModel):
         related_name="children",
     )
 
-    object = CategoryManager()
+    object = CategoryManager()  # NOTE make sure the defaul manager always place first
     tree = TreeManager()  # type: ignore[django-manager-missing]
 
     class Meta:
@@ -71,7 +72,7 @@ class Category(MPTTModel, SeoModel):
         return self.name
 
 
-class ProductType(models.Model):
+class ProductType(ProductTypeMixin, models.Model):
     name = models.CharField(max_length=250)
     slug = models.SlugField(
         allow_unicode=True,
@@ -89,7 +90,9 @@ class ProductType(models.Model):
         default=zero_weight,
         measurement=Weight,
         unit_choices=WeightUnits.CHOICES,
-    )
+        null=True,
+        blank=True,
+    )  # FIXME: this is not working
 
     tax_class = models.ForeignKey(
         TaxClass,

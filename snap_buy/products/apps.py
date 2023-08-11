@@ -8,6 +8,6 @@ class UsersConfig(AppConfig):
 
     def ready(self):
         try:
-            import snap_buy.users.signals  # noqa: F401
+            import snap_buy.products.signals  # noqa: F401
         except ImportError:
             pass

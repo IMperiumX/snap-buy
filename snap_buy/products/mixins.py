@@ -5,7 +5,11 @@ from django.db import transaction
 from django.utils import timezone
 from prices import Money
 
+from measurement.measures import Weight
+
+
 from snap_buy.core.models import SortableModel
+from snap_buy.core.weight import convert_weight_to_default_weight_unit
 from snap_buy.products import models as products_models
 from snap_buy.products.enums import ProductTypeKind
 
@@ -19,6 +23,22 @@ class ProductMixin:
     @staticmethod
     def sort_by_attribute_fields() -> list:
         return ["concatenated_values_order", "concatenated_values", "name"]
+
+
+import pysnooper
+
+
+@pysnooper.snoop()
+class ProductTypeMixin:
+    def save(self, *args, **kwargs):
+        if getattr(self, "weight"):
+            self.weight = convert_weight_to_default_weight_unit(Weight(self.weight))
+
+        super().save(*args, **kwargs)
+
+    @staticmethod
+    def resolve_weight(root, _info):
+        return convert_weight_to_default_weight_unit(root.weight)
 
 
 class ProductVariantMixin:

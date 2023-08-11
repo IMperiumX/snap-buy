@@ -1,19 +1,20 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 
 from .models import (
     Category,
-    Collection,
-    CollectionChannelListing,
-    CollectionProduct,
+    ProductType,
     Product,
     ProductChannelListing,
-    ProductMedia,
-    ProductType,
     ProductVariant,
     ProductVariantChannelListing,
-    Shipper,
-    Tag,
+    ProductMedia,
     VariantMedia,
+    Shipper,
+    CollectionProduct,
+    Tag,
+    Collection,
+    CollectionChannelListing,
 )
 
 
@@ -72,7 +73,6 @@ class ProductAdmin(admin.ModelAdmin):
         "seo_description",
         "available",
         "created",
-        "default_variant",
         "description",
         "image",
         "name",
@@ -80,17 +80,18 @@ class ProductAdmin(admin.ModelAdmin):
         "rating",
         "slug",
         "updated",
-        "weight",
         "category",
+        "default_variant",
         "product_type",
         "tax_class",
+        "weight",
     )
     list_filter = (
         "available",
         "created",
-        "default_variant",
         "updated",
         "category",
+        "default_variant",
         "product_type",
         "tax_class",
     )
@@ -105,21 +106,21 @@ class ProductChannelListingAdmin(admin.ModelAdmin):
         "id",
         "published_at",
         "is_published",
-        "product",
-        "channel",
-        "visible_in_listings",
         "available_for_purchase_at",
         "currency",
         "discounted_price_amount",
+        "visible_in_listings",
+        "channel",
+        "product",
         "discounted_price",
     )
     list_filter = (
         "published_at",
         "is_published",
-        "product",
-        "channel",
-        "visible_in_listings",
         "available_for_purchase_at",
+        "visible_in_listings",
+        "channel",
+        "product",
     )
 
 
@@ -129,23 +130,23 @@ class ProductVariantAdmin(admin.ModelAdmin):
         "id",
         "sort_order",
         "external_reference",
-        "sku",
-        "name",
-        "track_inventory",
+        "created_at",
         "is_preorder",
+        "name",
         "preorder_end_date",
         "preorder_global_threshold",
         "quantity_limit_per_customer",
-        "created_at",
+        "sku",
+        "track_inventory",
         "updated_at",
-        "weight",
         "product",
+        "weight",
     )
     list_filter = (
-        "track_inventory",
+        "created_at",
         "is_preorder",
         "preorder_end_date",
-        "created_at",
+        "track_inventory",
         "updated_at",
         "product",
     )
@@ -158,16 +159,16 @@ class ProductVariantAdmin(admin.ModelAdmin):
 class ProductVariantChannelListingAdmin(admin.ModelAdmin):
     list_display = (
         "id",
-        "variant",
-        "channel",
-        "currency",
-        "price_amount",
         "cost_price_amount",
+        "currency",
         "preorder_quantity_threshold",
-        "price",
+        "price_amount",
+        "channel",
+        "variant",
         "cost_price",
+        "price",
     )
-    list_filter = ("variant", "channel")
+    list_filter = ("channel", "variant")
 
 
 @admin.register(ProductMedia)
@@ -175,12 +176,12 @@ class ProductMediaAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "sort_order",
-        "product",
-        "image",
         "alt",
-        "type",
         "external_url",
+        "image",
         "oembed_data",
+        "type",
+        "product",
     )
     list_filter = ("product",)
 
@@ -214,14 +215,14 @@ class CollectionAdmin(admin.ModelAdmin):
         "id",
         "seo_title",
         "seo_description",
-        "slug",
         "background_image",
         "background_image_alt",
-        "name",
         "description",
+        "name",
+        "slug",
     )
     raw_id_fields = ("products",)
-    search_fields = ("slug", "name")
+    search_fields = ("name", "slug")
     prepopulated_fields = {"slug": ["name"]}
 
 
