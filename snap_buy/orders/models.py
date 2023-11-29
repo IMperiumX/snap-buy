@@ -1,8 +1,136 @@
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
+from typing import TYPE_CHECKING, List, Optional, cast
 
 
-class Order(models.Model):
+if TYPE_CHECKING:
+    from snap_buy.users.models import User
+
+
+class OrderMinin:
+    def is_fully_paid(self):
+        return self.total_charged >= self.total.gross
+
+    def is_partly_paid(self):
+        return self.total_charged_amount > 0
+
+    def get_customer_email(self):
+        if self.user_id:
+            # when user_id is set, user is set as well
+            return cast("User", self.user).email
+        return self.user_email
+
+    def __repr__(self):
+        return "<Order #%r>" % (self.id,)
+
+    def __str__(self):
+        return f"#{self.id}"
+
+    # def get_last_payment(self) -> Optional[Payment]:
+    #     # Skipping a partial payment is a temporary workaround for storing a basic data
+    #     # about partial payment from Adyen plugin. This is something that will removed
+    #     # in 3.1 by introducing a partial payments feature.
+    #     payments: List[Payment] = [payment for payment in self.payments.all() if not payment.partial]
+    #     return max(payments, default=None, key=attrgetter("pk"))
+
+    # def is_pre_authorized(self):
+    #     return (
+    #         self.payments.filter(
+    #             is_active=True,
+    #             transactions__kind=TransactionKind.AUTH,
+    #             transactions__action_required=False,
+    #         )
+    #         .filter(transactions__is_success=True)
+    #         .exists()
+    #     )
+
+    # def is_captured(self):
+    #     return (
+    #         self.payments.filter(
+    #             is_active=True,
+    #             transactions__kind=TransactionKind.CAPTURE,
+    #             transactions__action_required=False,
+    #         )
+    #         .filter(transactions__is_success=True)
+    #         .exists()
+    #     )
+
+    # def is_shipping_required(self):
+    #     return any(line.is_shipping_required for line in self.lines.all())
+
+    # def get_subtotal(self):
+    #     return get_subtotal(self.lines.all(), self.currency)
+
+    # def get_total_quantity(self):
+    #     return sum([line.quantity for line in self.lines.all()])
+
+    # def is_draft(self):
+    #     return self.status == OrderStatus.DRAFT
+
+    # def is_unconfirmed(self):
+    #     return self.status == OrderStatus.UNCONFIRMED
+
+    # def is_expired(self):
+    #     return self.status == OrderStatus.EXPIRED
+
+    # def is_open(self):
+    #     statuses = {OrderStatus.UNFULFILLED, OrderStatus.PARTIALLY_FULFILLED}
+    #     return self.status in statuses
+
+    # def can_cancel(self):
+    #     statuses_allowed_to_cancel = [
+    #         FulfillmentStatus.CANCELED,
+    #         FulfillmentStatus.REFUNDED,
+    #         FulfillmentStatus.REPLACED,
+    #         FulfillmentStatus.REFUNDED_AND_RETURNED,
+    #         FulfillmentStatus.RETURNED,
+    #     ]
+    #     return (not self.fulfillments.exclude(status__in=statuses_allowed_to_cancel).exists()) and self.status not in {
+    #         OrderStatus.CANCELED,
+    #         OrderStatus.DRAFT,
+    #         OrderStatus.EXPIRED,
+    #     }
+
+    # def can_capture(self, payment=None):
+    #     if not payment:
+    #         payment = self.get_last_payment()
+    #     if not payment:
+    #         return False
+    #     order_status_ok = self.status not in {
+    #         OrderStatus.DRAFT,
+    #         OrderStatus.CANCELED,
+    #         OrderStatus.EXPIRED,
+    #     }
+    #     return payment.can_capture() and order_status_ok
+
+    # def can_void(self, payment=None):
+    #     if not payment:
+    #         payment = self.get_last_payment()
+    #     if not payment:
+    #         return False
+    #     return payment.can_void()
+
+    # def can_refund(self, payment=None):
+    #     if not payment:
+    #         payment = self.get_last_payment()
+    #     if not payment:
+    #         return False
+    #     return payment.can_refund()
+
+    # def can_mark_as_paid(self, payments=None):
+    #     if not payments:
+    #         payments = self.payments.all()
+    #     return len(payments) == 0
+
+    # @property
+    # def total_balance(self):
+    #     return self.total_charged - self.total.gross
+
+    # def get_total_weight(self, _lines=None):
+    #     return self.weight
+
+
+class Order(OrderMinin, models.Model):
     ...
 
 
