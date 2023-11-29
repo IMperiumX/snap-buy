@@ -32,8 +32,8 @@ class AddressMixin:
         return models.Address.objects.create(**self.as_data())
 
 
-class PermissionMixin:
-    # TODO: create Permission app and include PermissionMixin with User
+class PermissionsMixin:
+    # TODO: create Permission app and include PermissionsMixin with User
 
     pass
 
