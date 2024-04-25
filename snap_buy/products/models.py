@@ -1,11 +1,10 @@
-import os
+from pathlib import Path
 from uuid import uuid4
 
 from django.db import models
+from django.utils.deconstruct import deconstructible
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
-
-from django.utils.deconstruct import deconstructible
 
 
 @deconstructible
@@ -19,24 +18,21 @@ class UniqueUploadImagePath:
     the filename extension will be dropped.
     """
 
-    def __init__(self, directory=None, keep_basename=False, keep_ext=True):
+    def __init__(self, directory=None, *, keep_basename=False, keep_ext=True):
         self.directory = directory
         self.keep_basename = keep_basename
         self.keep_ext = keep_ext
 
     def __call__(self, model_instance, filename):
-        base, ext = os.path.splitext(filename)
-        filename = f"{base}_{uuid4()}" if self.keep_basename else str(uuid4())
+        filename_path = Path(filename)
+        filename = (
+            f"{filename_path.stem}_{uuid4()}" if self.keep_basename else str(uuid4())
+        )
         if self.keep_ext:
-            filename += ext
+            filename += filename_path.suffix
         if self.directory is None:
             return filename
-        return os.path.join(now().strftime(self.directory), filename)
-
-
-# def category_image_path(instance, filename):
-#     secret = get_random_string(length=12)
-#     return f"product/category/icons/{instance.name}.{secret}.{filename.split('.')[-1]}"
+        return str(now().strftime(self.directory) / filename_path)
 
 
 class ProductCategory(models.Model):
@@ -63,7 +59,9 @@ def get_default_product_category():
 
 class Product(models.Model):
     seller = models.ForeignKey(
-        "users.User", related_name="products", on_delete=models.CASCADE
+        "users.User",
+        related_name="products",
+        on_delete=models.CASCADE,
     )
     # TODO: do soft delete
     category = models.ForeignKey(
