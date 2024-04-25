@@ -26,7 +26,9 @@ class UniqueUploadImagePath:
     def __call__(self, model_instance, filename):
         filename_path = Path(filename)
         filename = (
-            f"{filename_path.stem}_{uuid4()}" if self.keep_basename else str(uuid4())
+            f"{model_instance.id}.{filename_path.stem}_{uuid4()}"
+            if self.keep_basename
+            else str(uuid4())
         )
         if self.keep_ext:
             filename += filename_path.suffix
