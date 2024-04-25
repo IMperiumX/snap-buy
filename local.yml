@@ -14,7 +14,7 @@ services:
     depends_on:
       - postgres
       - redis
-      - mailhog
+      - mailpit
     volumes:
       - .:/app:z
     env_file:
@@ -36,30 +36,14 @@ services:
     env_file:
       - ./.envs/.local/.postgres
 
-  docs:
-    image: snap_buy_local_docs
-    container_name: snap_buy_local_docs
-    build:
-      context: .
-      dockerfile: ./compose/local/docs/Dockerfile
-    env_file:
-      - ./.envs/.local/.django
-    volumes:
-      - ./docs:/docs:z
-      - ./config:/app/config:z
-      - ./snap_buy:/app/snap_buy:z
+  mailpit:
+    image: docker.io/axllent/mailpit:latest
+    container_name: snap_buy_local_mailpit
     ports:
-      - '9000:9000'
-    command: /start-docs
-
-  mailhog:
-    image: mailhog/mailhog:v1.0.0
-    container_name: snap_buy_local_mailhog
-    ports:
-      - '8025:8025'
+      - "8025:8025"
 
   redis:
-    image: redis:6
+    image: docker.io/redis:6
     container_name: snap_buy_local_redis
 
   celeryworker:
@@ -69,7 +53,7 @@ services:
     depends_on:
       - redis
       - postgres
-      - mailhog
+      - mailpit
     ports: []
     command: /start-celeryworker
 
@@ -80,7 +64,7 @@ services:
     depends_on:
       - redis
       - postgres
-      - mailhog
+      - mailpit
     ports: []
     command: /start-celerybeat
 

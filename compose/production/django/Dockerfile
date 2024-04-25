@@ -1,6 +1,6 @@
 
 # define an alias for the specific python version used in this file.
-FROM python:3.11.5-slim-bullseye as python
+FROM docker.io/python:3.12.3-slim-bookworm as python
 
 # Python build stage
 FROM python as python-build-stage
@@ -11,7 +11,7 @@ ARG BUILD_ENVIRONMENT=production
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # dependencies for building Python packages
   build-essential \
-  # psycopg2 dependencies
+  # psycopg dependencies
   libpq-dev
 
 # Requirements are installed here to ensure they will be cached.
@@ -40,7 +40,7 @@ RUN addgroup --system django \
 
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
-  # psycopg2 dependencies
+  # psycopg dependencies
   libpq-dev \
   # Translations dependencies
   gettext \
@@ -75,7 +75,7 @@ RUN sed -i 's/\r$//g' /start-celerybeat
 RUN chmod +x /start-celerybeat
 
 
-COPY ./compose/production/django/celery/flower/start /start-flower
+COPY --chown=django:django ./compose/production/django/celery/flower/start /start-flower
 RUN sed -i 's/\r$//g' /start-flower
 RUN chmod +x /start-flower
 
@@ -84,8 +84,13 @@ RUN chmod +x /start-flower
 COPY --chown=django:django . ${APP_HOME}
 
 # make django owner of the WORKDIR directory as well.
-RUN chown django:django ${APP_HOME}
+RUN chown -R django:django ${APP_HOME}
 
 USER django
+
+RUN DATABASE_URL="" \
+  CELERY_BROKER_URL="" \
+  DJANGO_SETTINGS_MODULE="config.settings.test" \
+  python manage.py compilemessages
 
 ENTRYPOINT ["/entrypoint"]

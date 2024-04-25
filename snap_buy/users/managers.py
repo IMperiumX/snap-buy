@@ -1,49 +1,42 @@
-from django.contrib.auth.models import Group
+from typing import TYPE_CHECKING
+
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import UserManager as DjangoUserManager
-from django.db import models
-from django.db.models import Value
+
+if TYPE_CHECKING:
+    from .models import User  # noqa: F401
 
 
-class AddressQueryset(models.QuerySet):
-    def annotate_default(self, user):
-        # Set default shipping/billing address pk to None
-        # if default shipping/billing address doesn't exist
-        default_shipping_address_pk, default_billing_address_pk = None, None
-        if user.default_shipping_address:
-            default_shipping_address_pk = user.default_shipping_address.pk
-        if user.default_billing_address:
-            default_billing_address_pk = user.default_billing_address.pk
+class UserManager(DjangoUserManager["User"]):
+    """Custom manager for the User model."""
 
-        return user.addresses.annotate(
-            user_default_shipping_address_pk=Value(default_shipping_address_pk, models.IntegerField()),
-            user_default_billing_address_pk=Value(default_billing_address_pk, models.IntegerField()),
-        )
-
-
-class UserManager(DjangoUserManager):
-    def create_user(self, email, password=None, is_staff=False, is_active=True, **extra_fields):
-        """Create a user instance with the given email and password."""
-        email = UserManager.normalize_email(email)
-        # Google OAuth2 backend send unnecessary username field
-        extra_fields.pop("username", None)
-
-        user = self.model(email=email, is_active=is_active, is_staff=is_staff, **extra_fields)
-        if password:
-            user.set_password(password)
-        user.save()
+    def _create_user(self, email: str, password: str | None, **extra_fields):
+        """
+        Create and save a user with the given email and password.
+        """
+        if not email:
+            msg = "The given email must be set"
+            raise ValueError(msg)
+        email = self.normalize_email(email)
+        user = self.model(email=email, **extra_fields)
+        user.password = make_password(password)
+        user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password=None, **extra_fields):
-        user = self.create_user(email, password, is_staff=True, is_superuser=True, **extra_fields)
-        group, created = Group.objects.get_or_create(name="Full Access")
-        if created:
-            pass
-            # TODO: group.permissions.add(*get_permissions())
-        group.user_set.add(user)
-        return user
+    def create_user(self, email: str, password: str | None = None, **extra_fields):  # type: ignore[override]
+        extra_fields.setdefault("is_staff", False)
+        extra_fields.setdefault("is_superuser", False)
+        return self._create_user(email, password, **extra_fields)
 
-    def staff(self):
-        return self.get_queryset().filter(is_staff=True)
+    def create_superuser(self, email: str, password: str | None = None, **extra_fields):  # type: ignore[override]
+        extra_fields.setdefault("is_staff", True)
+        extra_fields.setdefault("is_superuser", True)
 
+        if extra_fields.get("is_staff") is not True:
+            msg = "Superuser must have is_staff=True."
+            raise ValueError(msg)
+        if extra_fields.get("is_superuser") is not True:
+            msg = "Superuser must have is_superuser=True."
+            raise ValueError(msg)
 
-AddressManager = models.Manager.from_queryset(AddressQueryset)
+        return self._create_user(email, password, **extra_fields)

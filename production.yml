@@ -46,7 +46,7 @@ services:
       - '0.0.0.0:5555:5555'
 
   redis:
-    image: redis:6
+    image: docker.io/redis:6
 
   celeryworker:
     <<: *django
@@ -62,12 +62,3 @@ services:
     <<: *django
     image: snap_buy_production_flower
     command: /start-flower
-
-  awscli:
-    build:
-      context: .
-      dockerfile: ./compose/production/aws/Dockerfile
-    env_file:
-      - ./.envs/.production/.django
-    volumes:
-      - production_postgres_data_backups:/backups:z

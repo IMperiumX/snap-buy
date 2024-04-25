@@ -1,10 +1,9 @@
-from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-User = get_user_model()
+from snap_buy.users.models import User
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(serializers.ModelSerializer[User]):
     class Meta:
         model = User
         fields = ["name", "url"]

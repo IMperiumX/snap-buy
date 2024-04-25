@@ -1,6 +1,6 @@
-"""
-Base settings to build other settings files upon.
-"""
+# ruff: noqa: ERA001, E501
+"""Base settings to build other settings files upon."""
+
 from pathlib import Path
 
 import environ
@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
 APPS_DIR = BASE_DIR / "snap_buy"
 env = environ.Env()
 
-READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=True)
+READ_DOT_ENV_FILE = env.bool("DJANGO_READ_DOT_ENV_FILE", default=False)
 if READ_DOT_ENV_FILE:
     # OS environment variables take precedence over variables from .env
     env.read_env(str(BASE_DIR / ".env"))
@@ -23,9 +23,16 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
 # In Windows, this must be set to your system time zone.
-TIME_ZONE = "UTC"
+TIME_ZONE = "Africa/Cairo"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
+# https://docs.djangoproject.com/en/dev/ref/settings/#languages
+# from django.utils.translation import gettext_lazy as _
+# LANGUAGES = [
+#     ('en', _('English')),
+#     ('fr-fr', _('French')),
+#     ('pt-br', _('Portuguese')),
+# ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
 SITE_ID = 1
 # https://docs.djangoproject.com/en/dev/ref/settings/#use-i18n
@@ -34,36 +41,11 @@ USE_I18N = True
 USE_TZ = True
 # https://docs.djangoproject.com/en/dev/ref/settings/#locale-paths
 LOCALE_PATHS = [str(BASE_DIR / "locale")]
-LANGUAGES = [
-    ("ar", "Arabic"),
-    ("ar-eg", "Arabic (Egypt)"),
-    ("en", "English"),
-    ("en-us", "English (United States)"),
-]
-USE_L10N = True
 
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {
-    "default": {
-        "NAME": "snap-buy",
-        "USER": "postgres",
-        "PASSWORD": "123456",
-        "HOST": "localhost",
-        "PORT": 5432,
-        "ENGINE": "django.db.backends.postgresql",
-        "ATOMIC_REQUESTS": True,
-        "AUTOCOMMIT": True,
-        "CONN_MAX_AGE": 0,
-        "CONN_HEALTH_CHECKS": False,
-        "OPTIONS": {"fallback_application_name": "django_shell"},
-        "TIME_ZONE": TIME_ZONE,
-        "TEST": {"CHARSET": None, "COLLATION": None, "MIGRATE": True, "MIRROR": None, "NAME": None},
-    }
-}
-
-
+DATABASES = {"default": env.db("DATABASE_URL")}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -84,7 +66,7 @@ DJANGO_APPS = [
     "django.contrib.sites",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.contrib.humanize", # Handy template tags
+    # "django.contrib.humanize", # Handy template tags
     "django.contrib.admin",
     "django.forms",
 ]
@@ -93,26 +75,18 @@ THIRD_PARTY_APPS = [
     "crispy_bootstrap5",
     "allauth",
     "allauth.account",
+    "allauth.mfa",
     "allauth.socialaccount",
     "django_celery_beat",
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
-    "mptt",
-    "django_prices",
-    "smart_selects",
-    "django_countries",
 ]
 
 LOCAL_APPS = [
     "snap_buy.users",
     # Your stuff: custom apps go here
-    "snap_buy.products",
-    "snap_buy.tax",
-    "snap_buy.channel",
-    "snap_buy.core",
-    "snap_buy.seo",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -148,7 +122,9 @@ PASSWORD_HASHERS = [
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -160,7 +136,6 @@ AUTH_PASSWORD_VALIDATORS = [
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "corsheaders.middleware.CorsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -168,6 +143,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 # STATIC
@@ -216,7 +192,7 @@ TEMPLATES = [
                 "snap_buy.users.context_processors.allauth_settings",
             ],
         },
-    }
+    },
 ]
 
 # https://docs.djangoproject.com/en/dev/ref/settings/#form-renderer
@@ -255,9 +231,12 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Yusuf Adel""", "yusufadell.dev@gmail.com")]
+ADMINS = [("""Yousef Adel""", "yusufadell.dev@gmail.com")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
+# https://cookiecutter-django.readthedocs.io/en/latest/settings.html#other-environment-settings
+# Force the `admin` sign in process to go through the `django-allauth` workflow
+DJANGO_ADMIN_FORCE_ALLAUTH = env.bool("DJANGO_ADMIN_FORCE_ALLAUTH", default=False)
 
 # LOGGING
 # ------------------------------------------------------------------------------
@@ -277,7 +256,7 @@ LOGGING = {
             "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
-        }
+        },
     },
     "root": {"level": "INFO", "handlers": ["console"]},
 }
@@ -319,23 +298,23 @@ CELERY_TASK_SEND_SENT_EVENT = True
 # django-allauth
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_AUTHENTICATION_METHOD = "email"
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_EMAIL_REQUIRED = True
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_USERNAME_REQUIRED = False
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/account/configuration.html
 ACCOUNT_ADAPTER = "snap_buy.users.adapters.AccountAdapter"
-# https://django-allauth.readthedocs.io/en/latest/forms.html
+# https://docs.allauth.org/en/latest/account/forms.html
 ACCOUNT_FORMS = {"signup": "snap_buy.users.forms.UserSignupForm"}
-# https://django-allauth.readthedocs.io/en/latest/configuration.html
+# https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_ADAPTER = "snap_buy.users.adapters.SocialAccountAdapter"
-# https://django-allauth.readthedocs.io/en/latest/forms.html
+# https://docs.allauth.org/en/latest/socialaccount/configuration.html
 SOCIALACCOUNT_FORMS = {"signup": "snap_buy.users.forms.UserSocialSignupForm"}
 
 # django-rest-framework
@@ -356,15 +335,11 @@ CORS_URLS_REGEX = r"^/api/.*$"
 # By Default swagger ui is available only to admin user(s). You can change permission classes to change that
 # See more configuration options at https://drf-spectacular.readthedocs.io/en/latest/settings.html#settings
 SPECTACULAR_SETTINGS = {
-    "TITLE": "snap-buy API",
-    "DESCRIPTION": "Documentation of API endpoints of snap-buy",
+    "TITLE": "Snap Buy API",
+    "DESCRIPTION": "Documentation of API endpoints of Snap Buy",
     "VERSION": "1.0.0",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
+    "SCHEMA_PATH_PREFIX": "/api/",
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
-
-DEFAULT_COUNTRY = env.str("DEFAULT_COUNTRY", default="US")
-DEFAULT_DECIMAL_PLACES = 3
-DEFAULT_MAX_DIGITS = 12
-DEFAULT_CURRENCY_CODE_LENGTH = 3

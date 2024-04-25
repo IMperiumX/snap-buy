@@ -1,11 +1,11 @@
-# snap-buy
+# Snap Buy
 
-Online Shop with essential functionalities of an e-commerce platform, Checkout process (cart, discount, payment with credit card) , High Performing Reccomendations using redis, i18n offers site in multiple languages
+Online Shop with essential functionalities of an e-commerce platform.
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
-[![Black code style](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-License: MIT
+License: Apache Software License 2.0
 
 ## Settings
 
@@ -74,12 +74,12 @@ celery -A config.celery_app worker -B -l info
 
 ### Email Server
 
-In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server [MailHog](https://github.com/mailhog/MailHog) with a web interface is available as docker container.
+In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server [Mailpit](https://github.com/axllent/mailpit) with a web interface is available as docker container.
 
-Container mailhog will start automatically when you will run all docker containers.
+Container mailpit will start automatically when you will run all docker containers.
 Please check [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html) for more details how to start all containers.
 
-With MailHog running, to view messages that are sent by your application, open your browser and go to `http://127.0.0.1:8025`
+With Mailpit running, to view messages that are sent by your application, open your browser and go to `http://127.0.0.1:8025`
 
 ### Sentry
 

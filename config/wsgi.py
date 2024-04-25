@@ -1,5 +1,6 @@
+# ruff: noqa
 """
-WSGI config for snap-buy project.
+WSGI config for Snap Buy project.
 
 This module contains the WSGI application used by Django's development server
 and any production WSGI deployments. It should expose a module-level variable
@@ -13,6 +14,7 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
+
 import os
 import sys
 from pathlib import Path

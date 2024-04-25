@@ -1,9 +1,9 @@
-.. snap-buy documentation master file, created by
+.. Snap Buy documentation master file, created by
    sphinx-quickstart.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to snap-buy's documentation!
+Welcome to Snap Buy's documentation!
 ======================================================================
 
 .. toctree::
