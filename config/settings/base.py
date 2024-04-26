@@ -345,3 +345,9 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+
+# Twilio
+TWILIO_ACCOUNT_SID = env.str("TWILIO_ACCOUNT_SID")
+TWILIO_AUTH_TOKEN = env.str("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = env.str("TWILIO_PHONE_NUMBER")
