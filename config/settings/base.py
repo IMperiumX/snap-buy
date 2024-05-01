@@ -82,6 +82,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+    "phonenumber_field",
 ]
 
 LOCAL_APPS = [
@@ -347,8 +348,28 @@ SPECTACULAR_SETTINGS = {
 # Your stuff...
 # ------------------------------------------------------------------------------
 
+# Phone number field
+PHONENUMBER_DEFAULT_REGION = "ET"
+
+# Token length for OTP
+TOKEN_LENGTH = 6
+
+# Token expiry
+TOKEN_EXPIRE_MINUTES = 3
 
 # Twilio
 TWILIO_ACCOUNT_SID = env.str("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = env.str("TWILIO_AUTH_TOKEN")
 TWILIO_PHONE_NUMBER = env.str("TWILIO_PHONE_NUMBER")
+
+
+# Stripe
+STRIPE_PUBLISHABLE_KEY = env.str("STRIPE_PUBLISHABLE_KEY")
+STRIPE_SECRET_KEY = env.str("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_SECRET = env.str("STRIPE_WEBHOOK_SECRET")
+
+BACKEND_DOMAIN = env.str("BACKEND_DOMAIN")
+FRONTEND_DOMAIN = env.str("FRONTEND_DOMAIN")
+
+PAYMENT_SUCCESS_URL = env.str("PAYMENT_SUCCESS_URL")
+PAYMENT_CANCEL_URL = env.str("PAYMENT_CANCEL_URL")
