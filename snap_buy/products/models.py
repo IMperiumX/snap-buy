@@ -580,7 +580,7 @@ class CheckoutCheckout(models.Model):
     channel = models.ForeignKey(Channel, models.DO_NOTHING)
     language_code = models.CharField(max_length=35)
     collection_point = models.ForeignKey(
-        "WarehouseWarehouse",
+        "Warehouse",
         models.DO_NOTHING,
         blank=True,
         null=True,
@@ -617,7 +617,7 @@ class CheckoutCheckoutGiftCards(models.Model):
         unique_together = (("checkout", "giftcard"),)
 
 
-class CheckoutCheckoutline(models.Model):
+class Checkoutline(models.Model):
     quantity = models.IntegerField()
     checkout = models.ForeignKey(CheckoutCheckout, models.DO_NOTHING)
     variant = models.ForeignKey("ProductProductvariant", models.DO_NOTHING)
@@ -768,7 +768,7 @@ class DiscountCheckoutlinediscount(models.Model):
     translated_name = models.CharField(max_length=255, blank=True, null=True)
     reason = models.TextField(blank=True, null=True)
     line = models.ForeignKey(
-        CheckoutCheckoutline,
+        Checkoutline,
         models.DO_NOTHING,
         blank=True,
         null=True,
@@ -1372,7 +1372,7 @@ class OrderFulfillmentline(models.Model):
     quantity = models.IntegerField()
     fulfillment = models.ForeignKey(OrderFulfillment, models.DO_NOTHING)
     stock = models.ForeignKey(
-        "WarehouseStock",
+        "Stock",
         models.DO_NOTHING,
         blank=True,
         null=True,
@@ -1444,7 +1444,7 @@ class Order(models.Model):
     total_charged_amount = models.DecimalField(max_digits=12, decimal_places=3)
     origin = models.CharField(max_length=32)
     collection_point = models.ForeignKey(
-        "WarehouseWarehouse",
+        "Warehouse",
         models.DO_NOTHING,
         blank=True,
         null=True,
@@ -2076,7 +2076,7 @@ class ProductProductvariant(models.Model):
         db_table = "product_productvariant"
 
 
-class ProductProductvariantchannellisting(models.Model):
+class ProductVariantChannel(models.Model):
     currency = models.CharField(max_length=3)
     price_amount = models.DecimalField(
         max_digits=12,
@@ -2120,7 +2120,7 @@ class ProductVariantchannellistingpromotionrule(models.Model):
     currency = models.CharField(max_length=3)
     promotion_rule = models.ForeignKey(DiscountPromotionrule, models.DO_NOTHING)
     variant_channel_listing = models.ForeignKey(
-        ProductProductvariantchannellisting,
+        ProductVariantChannel,
         models.DO_NOTHING,
     )
 
@@ -2398,7 +2398,7 @@ class ThumbnailThumbnail(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING, blank=True, null=True)
     app = models.ForeignKey(App, models.DO_NOTHING, blank=True, null=True)
     app_installation = models.ForeignKey(
-        Appinstallation,
+        AppInstallation,
         models.DO_NOTHING,
         blank=True,
         null=True,
@@ -2410,7 +2410,7 @@ class ThumbnailThumbnail(models.Model):
 
 class WarehouseAllocation(models.Model):
     quantity_allocated = models.IntegerField()
-    stock = models.ForeignKey("WarehouseStock", models.DO_NOTHING)
+    stock = models.ForeignKey("Stock", models.DO_NOTHING)
     order_line = models.ForeignKey(Orderline, models.DO_NOTHING)
 
     class Meta:
@@ -2418,7 +2418,7 @@ class WarehouseAllocation(models.Model):
 
 
 class WarehouseChannelwarehouse(models.Model):
-    warehouse = models.ForeignKey("WarehouseWarehouse", models.DO_NOTHING)
+    warehouse = models.ForeignKey("Warehouse", models.DO_NOTHING)
     channel = models.ForeignKey(Channel, models.DO_NOTHING)
     sort_order = models.IntegerField(blank=True, null=True)
 
@@ -2433,50 +2433,43 @@ class WarehouseChannelwarehouse(models.Model):
 class WarehousePreorderallocation(models.Model):
     quantity = models.IntegerField()
     product_variant_channel_listing = models.ForeignKey(
-        ProductProductvariantchannellisting,
+        ProductVariantChannel,
         models.DO_NOTHING,
     )
     order_line = models.ForeignKey(Orderline, models.DO_NOTHING)
-
-    class Meta:
-        db_table = "warehouse_preorderallocation"
 
 
 class WarehousePreorderreservation(models.Model):
     quantity_reserved = models.IntegerField()
     reserved_until = models.DateTimeField()
     product_variant_channel_listing = models.ForeignKey(
-        ProductProductvariantchannellisting,
+        ProductVariantChannel,
         models.DO_NOTHING,
     )
-    checkout_line = models.ForeignKey(CheckoutCheckoutline, models.DO_NOTHING)
+    checkout_line = models.ForeignKey(Checkoutline, models.DO_NOTHING)
 
     class Meta:
         db_table = "warehouse_preorderreservation"
 
 
-class WarehouseReservation(models.Model):
+class Reservation(models.Model):
     quantity_reserved = models.IntegerField()
     reserved_until = models.DateTimeField()
-    stock = models.ForeignKey("WarehouseStock", models.DO_NOTHING)
-    checkout_line = models.ForeignKey(CheckoutCheckoutline, models.DO_NOTHING)
-
-    class Meta:
-        db_table = "warehouse_reservation"
+    stock = models.ForeignKey("Stock", models.DO_NOTHING)
+    checkout_line = models.ForeignKey(Checkoutline, models.DO_NOTHING)
 
 
-class WarehouseStock(models.Model):
+class Stock(models.Model):
     quantity = models.IntegerField()
     product_variant = models.ForeignKey(ProductProductvariant, models.DO_NOTHING)
-    warehouse = models.ForeignKey("WarehouseWarehouse", models.DO_NOTHING)
+    warehouse = models.ForeignKey("Warehouse", models.DO_NOTHING)
     quantity_allocated = models.IntegerField()
 
     class Meta:
-        db_table = "warehouse_stock"
         unique_together = (("warehouse", "product_variant"),)
 
 
-class WarehouseWarehouse(models.Model):
+class Warehouse(models.Model):
     id = models.UUIDField(primary_key=True)
     name = models.CharField(max_length=250)
     email = models.CharField(max_length=254)
@@ -2493,20 +2486,16 @@ class WarehouseWarehouse(models.Model):
         null=True,
     )
 
-    class Meta:
-        db_table = "warehouse_warehouse"
 
-
-class WarehouseWarehouseShippingZones(models.Model):
-    warehouse = models.ForeignKey(WarehouseWarehouse, models.DO_NOTHING)
+class WarehouseShippingZones(models.Model):
+    warehouse = models.ForeignKey(Warehouse, models.DO_NOTHING)
     shippingzone = models.ForeignKey(ShippingShippingzone, models.DO_NOTHING)
 
     class Meta:
-        db_table = "warehouse_warehouse_shipping_zones"
         unique_together = (("warehouse", "shippingzone"),)
 
 
-class WebhookWebhook(models.Model):
+class Webhook(models.Model):
     target_url = models.CharField(max_length=255)
     is_active = models.BooleanField()
     secret_key = models.CharField(max_length=255, blank=True, null=True)
@@ -2515,13 +2504,7 @@ class WebhookWebhook(models.Model):
     subscription_query = models.TextField(blank=True, null=True)
     custom_headers = models.JSONField(blank=True, null=True)
 
-    class Meta:
-        db_table = "webhook_webhook"
 
-
-class WebhookWebhookevent(models.Model):
+class WebhookEvent(models.Model):
     event_type = models.CharField(max_length=128)
-    webhook = models.ForeignKey(WebhookWebhook, models.DO_NOTHING)
-
-    class Meta:
-        db_table = "webhook_webhookevent"
+    webhook = models.ForeignKey(Webhook, models.DO_NOTHING)
