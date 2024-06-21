@@ -20,8 +20,19 @@ from django.contrib.sites.models import Site
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import connection, models
-from django.db.models import (Case, Exists, F, Model, OrderBy, OuterRef, Q,
-                              Subquery, Value, When, signals)
+from django.db.models import (
+    Case,
+    Exists,
+    F,
+    Model,
+    OrderBy,
+    OuterRef,
+    Q,
+    Subquery,
+    Value,
+    When,
+    signals,
+)
 from django.db.models.expressions import Exists, OuterRef, Subquery
 from django.db.models.functions import Coalesce
 from django.db.models.query import QuerySet
@@ -152,6 +163,7 @@ def prepare_all_units_dict():
 
 
 MeasurementUnits = type("MeasurementUnits", (object,), prepare_all_units_dict())
+
 
 class JobStatus:
     PENDING = "pending"
@@ -371,6 +383,7 @@ Saleor Model Scheme (intial)
 """
 
 task_logger = get_task_logger(__name__)
+
 
 def get_domain(site: Optional[Site] = None) -> str:
     if settings.PUBLIC_URL:
@@ -798,6 +811,7 @@ def get_permissions_from_codenames(
         .order_by("codename")
     )
 
+
 from typing import TYPE_CHECKING, Any, TypeVar, Union
 
 from django.conf import settings
@@ -820,6 +834,7 @@ def permission_required(
         return requestor.has_perms(perms)
     return False
 
+
 def has_one_of_permissions(
     requestor: Union["User", "App", None], permissions: Iterable[BasePermissionEnum]
 ) -> bool:
@@ -831,7 +846,6 @@ def has_one_of_permissions(
         if permission_required(requestor, (perm,)):
             return True
     return False
-
 
 
 class TranslationWrapper:
@@ -881,6 +895,7 @@ def get_translation(instance, language_code=None) -> TranslationWrapper:
     if not language_code:
         language_code = settings.LANGUAGE_CODE
     return TranslationWrapper(instance, language_code)
+
 
 import re
 import warnings
@@ -1035,6 +1050,7 @@ def clean_text_data_block(text: str) -> str:
         new_text += text[end_of_match:]
 
     return new_text if new_text else text
+
 
 class BaseAssignedAttribute(models.Model):
     # TODO: stop using this class in new code
@@ -1524,6 +1540,8 @@ class AttributeValueTranslation(Translation):
                         if page_type_id := page.page_type_id:
                             context["page_type_id"] = page_type_id
         return context
+
+
 from django.contrib import auth
 from django.core.exceptions import PermissionDenied
 from django.db import models
@@ -1686,6 +1704,8 @@ class PermissionsMixin(models.Model):  # noqa: D205, D212, D400, D415
         If an object is passed, check if the user has all required perms for it.
         """
         return all(self.has_perm(perm, obj) for perm in perm_list)
+
+
 import datetime
 from collections.abc import Iterable
 from decimal import Decimal
@@ -1759,6 +1779,7 @@ def convert_weight_to_default_weight_unit(weight: Weight) -> Weight:
         else:
             weight.value = round(weight.value, 3)
     return weight
+
 
 class Category(ModelWithMetadata, MPTTModel, SeoModel):
     name = models.CharField(max_length=250)
@@ -2071,7 +2092,6 @@ class ProductVariant(SortableModel, ModelWithMetadata, ModelWithExternalReferenc
 
     def __str__(self) -> str:
         return self.name or self.sku or f"ID:{self.pk}"
-
 
     def get_base_price(
         self,
@@ -2439,6 +2459,8 @@ class CollectionTranslation(SeoModelTranslation):
             }
         )
         return translated_keys
+
+
 import importlib
 
 from celery.schedules import BaseSchedule
@@ -2587,6 +2609,7 @@ class PostalCodeRuleInclusionType:
         (INCLUDE, "Shipping method should include postal code rule"),
         (EXCLUDE, "Shipping method should exclude postal code rule"),
     ]
+
 
 def group_values(pattern, *values):
     result: list[Optional[tuple[Any, ...]]] = []
@@ -2853,7 +2876,6 @@ class ShippingMethodQueryset(models.QuerySet["ShippingMethod"]):
         return shipping_methods
 
 
-
 ShippingMethodManager = models.Manager.from_queryset(ShippingMethodQueryset)
 
 
@@ -2991,14 +3013,15 @@ class ShippingMethodTranslation(Translation):
             "name": self.name,
             "description": self.description,
         }
+
+
 from email.headerregistry import Address
 from email.utils import parseaddr
 from typing import Final, Optional
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.core.validators import (MaxLengthValidator, MinValueValidator,
-                                    RegexValidator)
+from django.core.validators import MaxLengthValidator, MinValueValidator, RegexValidator
 from django.db import models
 
 from ..core import TimePeriodType
@@ -3140,6 +3163,8 @@ class SiteSettingsTranslation(Translation):
             "header_text": self.header_text,
             "description": self.description,
         }
+
+
 from django.conf import settings
 from django.db import models
 from django_countries.fields import CountryField
@@ -3224,7 +3249,6 @@ class TaxConfigurationPerCountry(models.Model):
 
     def __str__(self):
         return str(self.country)
-
 
 
 class WarehouseQueryset(models.QuerySet["Warehouse"]):
@@ -3726,6 +3750,8 @@ class Reservation(models.Model):
             models.Index(fields=["checkout_line", "reserved_until"]),
         ]
         ordering = ("pk",)
+
+
 from django.db import models
 from django.utils import timezone
 
@@ -3757,6 +3783,8 @@ class ExportEvent(models.Model):
     app = models.ForeignKey(
         App, related_name="export_csv_events", on_delete=models.SET_NULL, null=True
     )
+
+
 import os
 
 from django.conf import settings
@@ -3902,6 +3930,8 @@ class GiftCardEvent(models.Model):
 
     class Meta:
         ordering = ("date",)
+
+
 from django.conf import settings
 from django.db import models
 from django.utils.timezone import now
@@ -3982,6 +4012,8 @@ class InvoiceEvent(models.Model):
 
     def __repr__(self):
         return f"{self.__class__.__name__}(type={self.type!r}, user={self.user!r})"
+
+
 from collections.abc import Iterable
 from typing import Union, cast
 from uuid import uuid4
@@ -4168,6 +4200,8 @@ class AppInstallation(Job):
                 raise ValueError("Cannot truncate message without max_length")
             message = Truncator(message).chars(max_length)
         self.message = message
+
+
 from django.db import models
 
 from ..core.utils.json_serializer import CustomJsonEncoder
@@ -4202,6 +4236,8 @@ class EmailTemplate(models.Model):
 
     def __str__(self):
         return self.name
+
+
 from django.core.validators import MaxLengthValidator
 from django.db import models
 
@@ -4236,11 +4272,15 @@ class SeoModelTranslation(Translation):
             "seo_title": self.seo_title,
             "seo_description": self.seo_description,
         }
+
+
 from django.db import models
 
 
 class Book(models.Model):
     name = models.CharField(max_length=30)
+
+
 from django.core.exceptions import ValidationError
 from django.db import models
 
@@ -4293,6 +4333,8 @@ class Thumbnail(models.Model):
         on_delete=models.CASCADE,
         related_name="thumbnails",
     )
+
+
 from django.db import models
 
 from ..app.validators import AppURLValidator
@@ -4336,6 +4378,8 @@ class WebhookEvent(models.Model):
 
     def __repr__(self):
         return self.event_type
+
+
 from datetime import timedelta
 
 from django.conf import settings
@@ -4394,6 +4438,8 @@ class Channel(ModelWithMetadata):
 
     def __str__(self):
         return self.slug
+
+
 """Checkout-related ORM models."""
 
 from datetime import date
@@ -4742,6 +4788,8 @@ class CheckoutMetadata(ModelWithMetadata):
     checkout = models.OneToOneField(
         Checkout, related_name="metadata_storage", on_delete=models.CASCADE
     )
+
+
 import datetime
 from typing import Any, TypeVar
 
@@ -4814,6 +4862,7 @@ class PublishableModel(models.Model):
             self.published_at is None
             or self.published_at <= datetime.datetime.now(pytz.UTC)
         )
+
 
 from django.db.models import F, JSONField, Max, Q
 
@@ -4928,6 +4977,8 @@ class EventDeliveryAttempt(models.Model):
 
     class Meta:
         ordering = ("-created_at",)
+
+
 import json
 from datetime import datetime
 from decimal import ROUND_HALF_UP, Decimal
@@ -4965,6 +5016,7 @@ class SanitizedJSONField(JSONField):
     def get_db_prep_save(self, value: dict, connection):
         """Sanitize the value for saving using the passed sanitizer."""
         return json.dumps(self._sanitizer_method(value))
+
 
 class NotApplicable(ValueError):
     """Exception raised when a discount is not applicable to a checkout.
@@ -5573,6 +5625,8 @@ class PromotionEvent(models.Model):
 
     class Meta:
         ordering = ("date",)
+
+
 from django.db import models
 from mptt.managers import TreeManager
 
@@ -5654,7 +5708,6 @@ class MenuItemTranslation(Translation):
         return {
             "name": self.name,
         }
-
 
 
 class OrderQueryset(models.QuerySet["Order"]):
@@ -6523,7 +6576,6 @@ class OrderGrantedRefundLine(models.Model):
     reason = models.TextField(blank=True, null=True, default="")
 
 
-
 class PageQueryset(PublishedQuerySet):
     def visible_to_user(self, requestor: Union["App", "User", None]):
         if requestor and requestor.has_perm(PagePermissions.MANAGE_PAGES):
@@ -6599,7 +6651,6 @@ class PageType(ModelWithMetadata):
             ),
         )
         indexes = [*ModelWithMetadata.Meta.indexes, GinIndex(fields=["name", "slug"])]
-
 
 
 class TransactionItem(ModelWithMetadata):
@@ -7031,6 +7082,8 @@ class Transaction(models.Model):
 
     def get_amount(self):
         return Money(self.amount, self.currency)
+
+
 from collections.abc import Iterable
 from functools import partial
 from typing import Union
@@ -7442,6 +7495,8 @@ class Group(models.Model):
 
     def natural_key(self):
         return (self.name,)
+
+
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 
@@ -7488,6 +7543,8 @@ class AttributePage(SortableModel):
 
     def get_ordering_queryset(self):
         return self.page_type.attributepage.all()
+
+
 from django.contrib.postgres.indexes import BTreeIndex
 from django.db import models
 
@@ -7536,10 +7593,11 @@ class AttributeProduct(SortableModel):
 
     def get_ordering_queryset(self):
         return self.product_type.attributeproduct.all()
+
+
 from django.db import models
 
-from .base import (AssociatedAttributeManager, AttributeValue,
-                   BaseAssignedAttribute)
+from .base import AssociatedAttributeManager, AttributeValue, BaseAssignedAttribute
 
 
 class AssignedVariantAttributeValue(SortableModel):
