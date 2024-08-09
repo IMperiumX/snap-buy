@@ -5,7 +5,7 @@ Online Shop with essential functionalities of an e-commerce platform.
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
-License: Apache Software License 2.0
+License: MIT
 
 ## Settings
 
@@ -74,12 +74,23 @@ celery -A config.celery_app worker -B -l info
 
 ### Email Server
 
-In development, it is often nice to be able to see emails that are being sent from your application. For that reason local SMTP server [Mailpit](https://github.com/axllent/mailpit) with a web interface is available as docker container.
+In development, it is often nice to be able to see emails that are being sent from your application. If you choose to use [Mailpit](https://github.com/axllent/mailpit) when generating the project a local SMTP server with a web interface will be available.
 
-Container mailpit will start automatically when you will run all docker containers.
-Please check [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html) for more details how to start all containers.
+1.  [Download the latest Mailpit release](https://github.com/axllent/mailpit/releases) for your OS.
 
-With Mailpit running, to view messages that are sent by your application, open your browser and go to `http://127.0.0.1:8025`
+2.  Copy the binary file to the project root.
+
+3.  Make it executable:
+
+        $ chmod +x mailpit
+
+4.  Spin up another terminal window and start it there:
+
+        ./mailpit
+
+5.  Check out <http://127.0.0.1:8025/> to see how it goes.
+
+Now you have your own mail server running locally, ready to receive whatever you send it.
 
 ### Sentry
 
@@ -91,7 +102,3 @@ You must set the DSN url in production.
 ## Deployment
 
 The following details how to deploy this application.
-
-### Docker
-
-See detailed [cookiecutter-django Docker documentation](http://cookiecutter-django.readthedocs.io/en/latest/deployment-with-docker.html).

@@ -1,7 +1,0 @@
-# PostgreSQL
-# ------------------------------------------------------------------------------
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=snap_buy
-POSTGRES_USER=jQpuIqgGxbLIFrQJbCKLkVpBmoyGDhsv
-POSTGRES_PASSWORD=Vkf7E2FOTyVwCnaa7m8TThvdiLLl7YeO4ckXSeaZxzJQwcIdZP3Vh5BI7LjCah4W
