@@ -18,6 +18,10 @@ class AppPermission(BasePermissionEnum):
     MANAGE_OBSERVABILITY = "app.manage_observability"
 
 
+class PaymentPermissions(BasePermissionEnum):
+    HANDLE_PAYMENTS = "payment.handle_payments"
+
+
 class CheckoutPermissions(BasePermissionEnum):
     MANAGE_CHECKOUTS = "checkout.manage_checkouts"
     HANDLE_CHECKOUTS = "checkout.handle_checkouts"
