@@ -93,7 +93,6 @@ select = [
     "ASYNC",
     "S",
     "BLE",
-    "FBT",
     "B",
     "A",
     "COM",
@@ -144,8 +143,10 @@ ignore = [
     # of types for comparison.
     # Deactivated because it can make the code slow:
     # https://github.com/astral-sh/ruff/issues/7871
-    "DJ008", # Model does not define `__str__` method
-    "DJ001", # Avoid using `null=True` on string-based fields such as `CharField`
+    "DJ008",  # Model does not define `__str__` method
+    "DJ001",  # Avoid using `null=True` on string-based fields such as `CharField`
+    "E501",   # Line too long (109 > 88)
+    "RET504", # Unnecessary assignment to `product_display` before `return` statement
 
 ]
 # Allow fix for all enabled rules (when `--fix`) is provided.
