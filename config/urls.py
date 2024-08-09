@@ -10,11 +10,11 @@ from drf_spectacular.views import SpectacularAPIView
 from drf_spectacular.views import SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
 
-from snap_buy.users.api.views import (
-    ProfileAPIView,
-    SendOrResendSMSAPIView,
-    VerifyPhoneNumberAPIView,
-)
+# from snap_buy.users.api.views import (
+#     ProfileAPIView,
+#     SendOrResendSMSAPIView,
+#     VerifyPhoneNumberAPIView,
+# )
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -29,16 +29,16 @@ urlpatterns = [
     path("users/", include("snap_buy.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
-    path(
-        "api/users/send-sms/", SendOrResendSMSAPIView.as_view(), name="send_resend_sms"
-    ),
-    path(
-        "api/users/verify-phone/",
-        VerifyPhoneNumberAPIView.as_view(),
-        name="verify_phone_number",
-    ),
-    path("api/users/profile/", ProfileAPIView.as_view(), name="profile_detail"),
-    path("api/payments/", include("snap_buy.payments.urls", namespace="payments")),
+    # path(
+    #     "api/users/send-sms/", SendOrResendSMSAPIView.as_view(), name="send_resend_sms"
+    # ),
+    # path(
+    #     "api/users/verify-phone/",
+    #     VerifyPhoneNumberAPIView.as_view(),
+    #     name="verify_phone_number",
+    # ),
+    # path("api/users/profile/", ProfileAPIView.as_view(), name="profile_detail"),
+    path("api/payments/", include("snap_buy.payment.urls", namespace="payments")),
     # Media files
     *static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT),
 ]

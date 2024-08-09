@@ -1,23 +1,119 @@
-import datetime
-import logging
 from typing import ClassVar
 
-from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+from django.contrib.postgres.indexes import GinIndex
 from django.db import models
+from django.db.models import CharField
+from django.db.models import EmailField
+from django.db.models import Value
+from django.forms.models import model_to_dict
 from django.urls import reverse
-from django.utils import timezone
-from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
+from django_countries.fields import Country
 from django_countries.fields import CountryField
+from phonenumber_field.modelfields import PhoneNumber
 from phonenumber_field.modelfields import PhoneNumberField
-from rest_framework.exceptions import NotAcceptable
-from twilio.base.exceptions import TwilioRestException
-from twilio.rest import Client
+
+from snap_buy.core.models import ModelWithMetadata
 
 from .managers import UserManager
+from .validators import validate_possible_number
 
-logger = logging.getLogger(__name__)
+
+class PossiblePhoneNumberField(PhoneNumberField):
+    """Less strict field for phone numbers written to database."""
+
+    default_validators = [validate_possible_number]
+
+
+class AddressQueryset(models.QuerySet["Address"]):
+    def annotate_default(self, user):
+        # Set default shipping/billing address pk to None
+        # if default shipping/billing address doesn't exist
+        default_shipping_address_pk, default_billing_address_pk = None, None
+        if user.default_shipping_address:
+            default_shipping_address_pk = user.default_shipping_address.pk
+        if user.default_billing_address:
+            default_billing_address_pk = user.default_billing_address.pk
+
+        return user.addresses.annotate(
+            user_default_shipping_address_pk=Value(
+                default_shipping_address_pk,
+                models.IntegerField(),
+            ),
+            user_default_billing_address_pk=Value(
+                default_billing_address_pk,
+                models.IntegerField(),
+            ),
+        )
+
+
+AddressManager = models.Manager.from_queryset(AddressQueryset)
+
+
+class Address(ModelWithMetadata):
+    first_name = models.CharField(max_length=256, blank=True)
+    last_name = models.CharField(max_length=256, blank=True)
+    company_name = models.CharField(max_length=256, blank=True)
+    street_address_1 = models.CharField(max_length=256, blank=True)
+    street_address_2 = models.CharField(max_length=256, blank=True)
+    city = models.CharField(max_length=256, blank=True)
+    city_area = models.CharField(max_length=128, blank=True)
+    postal_code = models.CharField(max_length=20, blank=True)
+    country = CountryField()
+    country_area = models.CharField(max_length=128, blank=True)
+    phone = PossiblePhoneNumberField(blank=True, default="", db_index=True)
+    validation_skipped = models.BooleanField(default=False)
+
+    objects = AddressManager()
+
+    class Meta:
+        ordering = ("pk",)
+        indexes = [
+            *ModelWithMetadata.Meta.indexes,
+            GinIndex(
+                name="address_search_gin",
+                # `opclasses` and `fields` should be the same length
+                fields=["first_name", "last_name", "city", "country"],
+                opclasses=["gin_trgm_ops"] * 4,
+            ),
+            GinIndex(
+                name="warehouse_address_search_gin",
+                # `opclasses` and `fields` should be the same length
+                fields=[
+                    "company_name",
+                    "street_address_1",
+                    "street_address_2",
+                    "city",
+                    "postal_code",
+                    "phone",
+                ],
+                opclasses=["gin_trgm_ops"] * 6,
+            ),
+        ]
+
+    def __eq__(self, other):
+        if not isinstance(other, Address):
+            return False
+        return self.as_data() == other.as_data()
+
+    __hash__ = models.Model.__hash__
+
+    def as_data(self):
+        """Return the address as a dict suitable for passing as kwargs.
+
+        Result does not contain the primary key or an associated user.
+        """
+        data = model_to_dict(self, exclude=["id", "user"])
+        if isinstance(data["country"], Country):
+            data["country"] = data["country"].code
+        if isinstance(data["phone"], PhoneNumber) and not data["validation_skipped"]:
+            data["phone"] = data["phone"].as_e164
+        return data
+
+    def get_copy(self):
+        """Return a new instance of the same address."""
+        return Address.objects.create(**self.as_data())
 
 
 class User(AbstractUser):
@@ -28,10 +124,10 @@ class User(AbstractUser):
     """
 
     # First and last name do not cover name patterns around the globe
-    name = models.CharField(_("Name of User"), blank=True, max_length=255)
+    name = CharField(_("Name of User"), blank=True, max_length=255)
     first_name = None  # type: ignore[assignment]
     last_name = None  # type: ignore[assignment]
-    email = models.EmailField(_("email address"), unique=True)
+    email = EmailField(_("email address"), unique=True)
     username = None  # type: ignore[assignment]
 
     USERNAME_FIELD = "email"
@@ -47,121 +143,3 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"pk": self.id})
-
-
-class Address(models.Model):
-    # Address options
-    BILLING = "B"
-    SHIPPING = "S"
-
-    ADDRESS_CHOICES = ((BILLING, _("billing")), (SHIPPING, _("shipping")))
-
-    user = models.ForeignKey(User, related_name="addresses", on_delete=models.CASCADE)
-    address_type = models.CharField(max_length=1, choices=ADDRESS_CHOICES)
-    default = models.BooleanField(default=False)
-    country = CountryField()
-    city = models.CharField(max_length=100)
-    street_address = models.CharField(max_length=100)
-    apartment_address = models.CharField(max_length=100)
-    postal_code = models.CharField(max_length=20, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ("-created_at",)
-
-    def __str__(self):
-        return self.user.get_full_name()
-
-
-class PhoneNumber(models.Model):
-    user = models.OneToOneField(User, related_name="phone", on_delete=models.CASCADE)
-    phone_number = PhoneNumberField(unique=True)
-    security_code = models.CharField(max_length=120)
-    is_verified = models.BooleanField(default=False)
-    sent = models.DateTimeField(null=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ("-created_at",)
-
-    def __str__(self):
-        return self.phone_number.as_e164
-
-    def generate_security_code(self):
-        """
-        Returns a unique random `security_code` for given `TOKEN_LENGTH` in the settings.
-        Default token length = 6
-        """
-        token_length = getattr(settings, "TOKEN_LENGTH", 6)
-        return get_random_string(token_length, allowed_chars="0123456789")
-
-    def is_security_code_expired(self):
-        expiration_date = self.sent + datetime.timedelta(
-            minutes=settings.TOKEN_EXPIRE_MINUTES,
-        )
-        return expiration_date <= timezone.now()
-
-    def send_confirmation(self):
-        twilio_account_sid = settings.TWILIO_ACCOUNT_SID
-        twilio_auth_token = settings.TWILIO_AUTH_TOKEN
-        twilio_phone_number = settings.TWILIO_PHONE_NUMBER
-
-        self.security_code = self.generate_security_code()
-
-        if all([twilio_account_sid, twilio_auth_token, twilio_phone_number]):
-            try:
-                twilio_client = Client(twilio_account_sid, twilio_auth_token)
-                twilio_client.messages.create(
-                    body=f"Your activation code is {self.security_code}",
-                    to=str(self.phone_number),
-                    from_=twilio_phone_number,
-                )
-            except TwilioRestException:
-                logger.debug("Error while Sending SMS message")
-            else:
-                self.sent = timezone.now()
-                self.save()
-                return True
-        else:
-            logger.debug("Twilio credentials are not set")
-        return False
-
-    def check_verification(self, security_code):
-        if (
-            not self.is_security_code_expired()
-            and security_code == self.security_code
-            and not self.is_verified
-        ):
-            self.is_verified = True
-            self.save()
-        else:
-            raise NotAcceptable(
-                _(
-                    "Your security code is wrong, expired or this phone is verified before.",
-                ),
-            )
-
-        return self.is_verified
-
-
-class Profile(models.Model):
-    user = models.OneToOneField(
-        "users.User",
-        related_name="profile",
-        on_delete=models.CASCADE,
-    )
-    avatar = models.ImageField(upload_to="avatar", blank=True)
-    bio = models.CharField(max_length=200, blank=True)
-
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        ordering = ("-created_at",)
-
-    def __str__(self):
-        return f"{self.user.get_full_name()}"

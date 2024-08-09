@@ -23,7 +23,7 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
 # In Windows, this must be set to your system time zone.
-TIME_ZONE = "Africa/Cairo"
+TIME_ZONE = "UTC"
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
 # https://docs.djangoproject.com/en/dev/ref/settings/#languages
@@ -45,8 +45,15 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # DATABASES
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
-DATABASES = {"default": env.db("DATABASE_URL")}
+
+DATABASES = {
+    "default": env.db(
+        "DATABASE_URL",
+        default="postgres:///snap_buy",
+    ),
+}
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
+DATABASE_CONNECTION_DEFAULT_NAME = "default"
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -82,15 +89,26 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
-    "phonenumber_field",
 ]
 
 LOCAL_APPS = [
     "snap_buy.users",
     # Your stuff: custom apps go here
-    "snap_buy.products",
-    "snap_buy.orders",
-    "snap_buy.payments",
+    "snap_buy.channel",
+    "snap_buy.core",
+    "snap_buy.discount",
+    "snap_buy.order",
+    "snap_buy.payment",
+    "snap_buy.permission",
+    "snap_buy.seo",
+    "snap_buy.tax",
+    "snap_buy.webhook",
+    "snap_buy.warehouse",
+    "snap_buy.shipping",
+    "snap_buy.product",
+    "snap_buy.checkout",
+    "snap_buy.app",
+    "snap_buy.giftcard",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -347,6 +365,10 @@ SPECTACULAR_SETTINGS = {
 }
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+DEFAULT_DECIMAL_PLACES = 3
+DEFAULT_MAX_DIGITS = 12
+DEFAULT_CURRENCY_CODE_LENGTH = 3
 
 # Phone number field
 PHONENUMBER_DEFAULT_REGION = "ET"
