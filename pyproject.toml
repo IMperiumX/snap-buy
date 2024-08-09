@@ -147,7 +147,7 @@ ignore = [
     "DJ001",  # Avoid using `null=True` on string-based fields such as `CharField`
     "E501",   # Line too long (109 > 88)
     "RET504", # Unnecessary assignment to `product_display` before `return` statement
-
+    "C419",   # Unnecessary list comprehension
 ]
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
