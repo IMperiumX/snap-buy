@@ -20,6 +20,7 @@ from django_prices.models import MoneyField
 from django_prices.models import TaxedMoneyField
 from measurement.measures import Weight
 
+from snap_buy.app.models import App
 from snap_buy.channel.models import Channel
 from snap_buy.core.models import ModelWithExternalReference
 from snap_buy.core.models import ModelWithMetadata
@@ -38,6 +39,7 @@ from snap_buy.shipping.models import ShippingMethod
 from . import FulfillmentStatus
 from . import OrderAuthorizeStatus
 from . import OrderChargeStatus
+from . import OrderGrantedRefundStatus
 from . import OrderOrigin
 from . import OrderStatus
 
@@ -816,3 +818,58 @@ class FulfillmentLine(models.Model):
         blank=True,
         null=True,
     )
+
+
+class OrderGrantedRefund(models.Model):
+    """Model used to store granted refund for the order."""
+
+    created_at = models.DateTimeField(default=now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, editable=False, db_index=True)
+
+    amount_value = models.DecimalField(
+        max_digits=settings.DEFAULT_MAX_DIGITS,
+        decimal_places=settings.DEFAULT_DECIMAL_PLACES,
+        default=Decimal("0"),
+    )
+    amount = MoneyField(amount_field="amount_value", currency_field="currency")
+    currency = models.CharField(
+        max_length=settings.DEFAULT_CURRENCY_CODE_LENGTH,
+    )
+    reason = models.TextField(blank=True, default="")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="+",
+    )
+    app = models.ForeignKey(
+        App,
+        related_name="+",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+    order = models.ForeignKey(
+        Order,
+        related_name="granted_refunds",
+        on_delete=models.CASCADE,
+    )
+    shipping_costs_included = models.BooleanField(default=False)
+
+    transaction_item = models.ForeignKey(
+        "payment.TransactionItem",
+        related_name="granted_refund",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+    )
+
+    status = models.CharField(
+        choices=OrderGrantedRefundStatus.CHOICES,
+        default=OrderGrantedRefundStatus.NONE,
+        max_length=128,
+    )
+
+    class Meta:
+        ordering = ("created_at", "id")

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from .models import Promotion
 from .models import PromotionRule
-from .models import PromotionRuleVariants
+from .models import PromotionRule_Variants
 from .models import Voucher
 from .models import VoucherCode
 from .models import VoucherCustomer
@@ -55,7 +55,7 @@ class PromotionRuleAdmin(admin.ModelAdmin):
     search_fields = ("name",)
 
 
-@admin.register(PromotionRuleVariants)
+@admin.register(PromotionRule_Variants)
 class PromotionRuleVariantsAdmin(admin.ModelAdmin):
     list_display = ("id", "promotionrule", "productvariant")
     list_filter = ("promotionrule", "productvariant")

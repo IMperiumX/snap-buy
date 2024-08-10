@@ -2,8 +2,6 @@ from rest_framework import serializers
 
 from snap_buy.order.models import Order
 from snap_buy.payment.models import Payment
-from snap_buy.users.api.serializers import BillingAddressSerializer
-from snap_buy.users.api.serializers import ShippingAddressSerializer
 from snap_buy.users.models import Address
 
 
@@ -54,8 +52,6 @@ class CheckoutSerializer(serializers.ModelSerializer):
     Serializer class to set or update shipping address, billing address and payment of an order.
     """
 
-    shipping_address = ShippingAddressSerializer()
-    billing_address = BillingAddressSerializer()
     payment = PaymentOptionSerializer()
 
     class Meta:

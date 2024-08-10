@@ -104,6 +104,21 @@ class Promotion(ModelWithMetadata):
         return (not self.end_date or self.end_date >= date) and self.start_date <= date
 
 
+class PromotionRule_Variants(models.Model):  # noqa: N801
+    id = models.BigAutoField(primary_key=True, editable=False, unique=True)
+    promotionrule = models.ForeignKey(
+        "discount.PromotionRule",
+        on_delete=models.CASCADE,
+    )
+    productvariant = models.ForeignKey(
+        "product.ProductVariant",
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return f"{self.promotionrule} (Promotion Rule Variants)"
+
+
 class PromotionRule(models.Model):
     id = models.UUIDField(primary_key=True, editable=False, unique=True, default=uuid4)
     name = models.CharField(max_length=255, blank=True)
@@ -171,21 +186,6 @@ class PromotionRule(models.Model):
             )
         msg = "Unknown discount type"
         raise NotImplementedError(msg)
-
-
-class PromotionRuleVariants(models.Model):
-    id = models.BigAutoField(primary_key=True, editable=False, unique=True)
-    promotionrule = models.ForeignKey(
-        PromotionRule,
-        on_delete=models.CASCADE,
-    )
-    productvariant = models.ForeignKey(
-        "product.ProductVariant",
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self):
-        return f"{self.promotionrule} (Promotion Rule Variants)"
 
 
 class VoucherCode(models.Model):

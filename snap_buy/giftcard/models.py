@@ -59,9 +59,10 @@ class GiftCard(ModelWithMetadata):
     )
     used_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        blank=True,
-        on_delete=models.SET_NULL,
         related_name="gift_cards",
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True,
     )
     created_by_email = models.EmailField(blank=True)
     used_by_email = models.EmailField(blank=True)
