@@ -1,5 +1,8 @@
+from functools import partial
 from typing import ClassVar
+from uuid import uuid4
 
+from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.contrib.postgres.indexes import GinIndex
 from django.db import models
@@ -8,6 +11,8 @@ from django.db.models import EmailField
 from django.db.models import Value
 from django.forms.models import model_to_dict
 from django.urls import reverse
+from django.utils import timezone
+from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import Country
 from django_countries.fields import CountryField
@@ -129,6 +134,49 @@ class User(AbstractUser):
     last_name = None  # type: ignore[assignment]
     email = EmailField(_("email address"), unique=True)
     username = None  # type: ignore[assignment]
+
+    addresses = models.ManyToManyField(
+        "users.Address",
+        blank=True,
+        related_name="user_addresses",
+    )
+    is_confirmed = models.BooleanField(default=True)
+    last_confirm_email_request = models.DateTimeField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
+    date_joined = models.DateTimeField(default=timezone.now, editable=False)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+    last_password_reset_request = models.DateTimeField(null=True, blank=True)
+    avatar = models.ImageField(upload_to="user-avatars", blank=True, null=True)
+    jwt_token_key = models.CharField(
+        max_length=12,
+        default=partial(
+            get_random_string,
+            length=12,
+        ),
+    )
+    language_code = models.CharField(
+        max_length=35,
+        choices=settings.LANGUAGES,
+        default=settings.LANGUAGE_CODE,
+    )
+    search_document = models.TextField(blank=True, default="")
+    uuid = models.UUIDField(default=uuid4, unique=True)
+
+    # relations
+    default_shipping_address = models.ForeignKey(
+        Address,
+        related_name="+",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
+    default_billing_address = models.ForeignKey(
+        Address,
+        related_name="+",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+    )
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
